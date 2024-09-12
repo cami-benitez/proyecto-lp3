@@ -62,3 +62,24 @@ Ciudades
     </div>
 </div>
     {% endblock %}
+
+    {% block js %}
+    <script>
+    $ (function(){
+      //Promise
+      //r => r.json()
+      fetch('/referemciales/ciudad/get-Ciudades')
+      .then(function(r){
+        return r.json();
+      })
+      .then(function(data){
+
+        console.log(data);
+      })
+      .catch(function(err){
+        console.error(error);
+      })
+
+    });
+    </script>
+    {% endblock %}
