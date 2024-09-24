@@ -1,3 +1,4 @@
+{% from 'macros.html' import modal %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -372,6 +373,9 @@
 
     <!-- Custom scripts for all pages-->
     <script src="{{ url_for('static', filename='js/sb-admin-2.min.js') }}"></script>
+     
+    <!-- Libreria para mensajes emergentes -->
+     <script src="{{ url_for('static', filename='vendor/sweetalert/sweetalert2@11.js') }}"></script>
 
   {#Este bloque pertenece anustros scripts de js#}  
   {% block js %}
