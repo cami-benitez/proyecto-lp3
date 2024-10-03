@@ -1,62 +1,62 @@
 from flask import current_app as app
 from app.conexion.conexion import Conexion
 
-class PaisDao:
+class DiaDao:
 
-    def getPais(self):
+    def getDias(self):
 
-        paisSQL = """
+        diaSQL = """
         SELECT id, descripcion
-        FROM paises
+        FROM dia
         """
         # objeto conexion
         conexion = Conexion()
         con = conexion.getConexion()
         cur = con.cursor()
         try:
-            cur.execute(paisSQL)
-            paises = cur.fetchall() # trae datos de la bd
+            cur.execute(diaSQL)
+            dias = cur.fetchall() # trae datos de la bd
             
             # Transformar los datos en una lista de diccionarios
-            return [{'id': pais[0], 'descripcion': pais[1]} for pais in paises]
+            return [{'id': dia[0], 'descripcion': dia[1]} for dia in dias]
         except Exception as e:
-            app.logger.error(f"Error al obtener todas los paises: {str(e)}")
+            app.logger.error(f"Error al obtener todas los dias: {str(e)}")
             return []    
         finally:
             cur.close()
             con.close()
 
-    def getPaisById(self, id):
+    def getDiaById(self, id):
 
-        paisSQL = """
+        diaSQL = """
         SELECT id, descripcion
-        FROM paises WHERE id=%s
+        FROM dia WHERE id=%s
         """
         # objeto conexion
         conexion = Conexion()
         con = conexion.getConexion()
         cur = con.cursor()
         try:
-            cur.execute(paisSQL, (id,))
-            PaisEncontrada = cur.fetchone() # Obtener una sola fila
-            if PaisEncontrada:
+            cur.execute(diaSQL, (id,))
+            diaEncontrada = cur.fetchone() # Obtener una sola fila
+            if diaEncontrada:
                 return {
-                        "id": PaisEncontrada[0],
-                        "descripcion": PaisEncontrada[1]
+                        "id": diaEncontrada[0],
+                        "descripcion": diaEncontrada[1]
                     }  # Retornar los datos de la ciudad
             else:
                 return None # Retornar None si no se encuentra la ciudad
         except Exception as e:
-            app.logger.error(f"Error al obtener pais: {str(e)}")
+            app.logger.error(f"Error al obtener dia: {str(e)}")
             return None
         finally:
             cur.close()
             con.close()
 
-    def guardarpais(self, descripcion):
+    def guardarDia(self, descripcion):
 
-        insertPaisSQL = """
-        INSERT INTO paises(descripcion) VALUES(%s) RETURNING id
+        insertDiaSQL = """
+        INSERT INTO dia(descripcion) VALUES(%s) RETURNING id
         """
 
         conexion = Conexion()
@@ -65,14 +65,14 @@ class PaisDao:
 
         # Ejecucion exitosa
         try:
-            cur.execute(insertPaisSQL, (descripcion,))
-            ciudad_id = cur.fetchone()[0]
+            cur.execute(insertDiaSQL, (descripcion,))
+            dia_id = cur.fetchone()[0]
             con.commit() # se confirma la insercion
-            return ciudad_id
+            return dia_id
 
         # Si algo fallo entra aqui
         except Exception as e:
-            app.logger.error(f"Error al insertar pais: {str(e)}")
+            app.logger.error(f"Error al insertar dia: {str(e)}")
             con.rollback() # retroceder si hubo error
             return False
 
@@ -83,10 +83,10 @@ class PaisDao:
             con.close()
 
 
-    def updatePais(self, id, descripcion):
+    def updateDia(self, id, descripcion):
 
-        updatePaisSQL = """
-        UPDATE paises
+        updateDiaSQL = """
+        UPDATE dia
         SET descripcion=%s
         WHERE id=%s
         """
@@ -97,13 +97,13 @@ class PaisDao:
 
         # Ejecucion exitosa
         try:
-            cur.execute(updatePaisSQL, (descripcion, id,))
+            cur.execute(updateDiaSQL, (descripcion, id,))
             filas_afectadas = cur.rowcount # Obtener el número de filas afectadas
             con.commit()
 
             return filas_afectadas > 0 # Retornar True si se actualizó al menos una fila   
         except Exception as e:
-            app.logger.error(f"Error al actualizar pais: {str(e)}")
+            app.logger.error(f"Error al actualizar dia: {str(e)}")
             con.rollback()
             return False
        
@@ -113,10 +113,10 @@ class PaisDao:
             con.close()
 
 
-    def deletePais(self, id):
+    def deleteDia(self, id):
 
-        updatePaisSQL = """
-        DELETE FROM paises
+        updateDiaSQL = """
+        DELETE FROM dia
         WHERE id=%s
         """
 
@@ -126,14 +126,14 @@ class PaisDao:
 
         # Ejecucion exitosa
         try:
-            cur.execute(updatePaisSQL, (id,))
+            cur.execute(updateDiaSQL, (id,))
             rows_affected = cur.rowcount
             con.commit()
 
             return rows_affected > 0  # Retornar True si se eliminó al menos una fila 
 
         except Exception as e:
-            app.logger.error(f"Error al eliminar pais: {str(e)}")
+            app.logger.error(f"Error al eliminar dia: {str(e)}")
             con.rollback()
             return False
 

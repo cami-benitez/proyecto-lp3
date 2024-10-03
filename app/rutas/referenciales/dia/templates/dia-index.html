@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
     
 {% block titulo %}
-pais
+Dias
 {% endblock %}
 
 {% block contenido %}
 <div class="container mt-4">
-    <h3>Listar pais</h3>
+    <h3>Listar dias </h3>
      <!-- tarjeta -->
      <div class="card">
       <div class="card-header">
@@ -40,9 +40,9 @@ pais
         <!-- Modal body -->
         <div class="modal-body">
           <div class="form-group">
-            <input type="hidden" id="txtIdpais">
+            <input type="hidden" id="txtIdDia">
             <label for="txtDescripcion">Descripción:</label>
-            <input type="text" class="form-control" placeholder="Ingrese algun pais" id="txtDescripcion">
+            <input type="text" class="form-control" placeholder="Ingrese algun dia" id="txtDescripcion">
           </div>
         </div>
 
@@ -77,7 +77,7 @@ pais
           language: {
             url: "{{ url_for('static', filename='vendor/datatables/es-ES.json') }}",
           },
-          ajax:'/api/v1/paises',
+          ajax:'/api/v1/dias',
           columns: [
             { data: 'descripcion' },
             { data: function(row) {
@@ -92,9 +92,9 @@ pais
       const agregar = () => {
         $('#btnAgregar').on('click', function(){
           // Setear un título a modal
-          $('#modalTitle').text("Agregar un pais");
+          $('#modalTitle').text("Agregar una dia");
           // inicia ventana modal
-          $('#txtIdpais').val("");
+          $('#txtIdDia').val("");
           $('#txtDescripcion').val("");
           $('#modalFormulario').modal();
         });
@@ -102,13 +102,13 @@ pais
     
       const guardar = () => {
         $('#btnGuardar').on('click', function() {
-          const idPais = $('#txtIdPais').val();
+          const idDia= $('#txtIdDia').val();
           const nuevaDescripcion = $('#txtDescripcion').val();
           const tabla = $('#tbl').DataTable();
     
-          if(idPais) {
+          if(idDia) {
             // update
-            fetch(`/api/v1/paises/${idPais}`, {
+            fetch(`/api/v1/dias/${idDia}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json'
@@ -118,17 +118,17 @@ pais
             .then(data => {
               if(data && !data.error && data.success) {
                 tabla.ajax.reload();
-                Swal.fire("Actualizado", "el pais ha sido actualizada correctamente.", "success");
+                Swal.fire("Actualizado", "El dia ha sido actualizada correctamente.", "success");
               } else {
                 Swal.fire(data.error);
               }
             }).catch(err => {
               console.error(err);
-              Swal.fire("Error", "Ocurrió un error al actualizar el pais.", "error");
+              Swal.fire("Error", "Ocurrió un error al actualiza el dia.", "error");
             });
           } else {
             // insert
-            fetch(`/api/v1/paises`, {
+            fetch(`/api/v1/dias`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
@@ -138,13 +138,13 @@ pais
             .then(data => {
               if(data && !data.error && data.success) {
                 tabla.ajax.reload();
-                Swal.fire("Actualizado", "El pais ha sido agregada correctamente.", "success");
+                Swal.fire("Actualizado", "El dia ha sido agregada correctamente.", "success");
               } else {
                 Swal.fire(data.error);
               }
             }).catch(err => {
               console.error(err);
-              Swal.fire("Error", "Ocurrió un error al guardar el pais.", "error");
+              Swal.fire("Error", "Ocurrió un error al guardar el dia.", "error");
             });
           }
           $('#txtDescripcion').val("");
@@ -163,13 +163,13 @@ pais
           }).then((result) => {
             if (result.isConfirmed) {
               //Swal.fire("Saved!", "", "success");
-              $('#modalTitle').text("Editar un pais");
+              $('#modalTitle').text("Editar un dia");
     
-              const idPais = $(this).data('id');
-              $('#txtIdpais').val(idPais);
+              const idDia = $(this).data('id');
+              $('#txtIdDia').val(idDia);
     
               // Necesitamos obtener la descripción del backend
-              fetch(`/api/v1/paises/${idPais}`, {
+              fetch(`/api/v1/dias/${idDia}`, {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json'
@@ -187,7 +187,7 @@ pais
     
       const eliminar = () => {
         $('#tbl').on('click', 'button[name="btn_eliminar"]',function(){
-          const idPais = $(this).data('id');
+          const idDia = $(this).data('id');
           // Mostrar mensaje de confirmación usando sweetalert
           Swal.fire({
             title: "¿Deseas eliminar este registro?",
@@ -196,7 +196,7 @@ pais
             cancelButtonText: `No`
           }).then((result) => {
             if (result.isConfirmed) {
-              fetch(`/api/v1/paises/${idPais}`, {
+              fetch(`/api/v1/dias/${idDia}`, {
                 method: 'DELETE',
                 headers: {
                   'Content-Type': 'application/json'
@@ -214,7 +214,7 @@ pais
                   Swal.fire(data.error);
                 }
               }).catch(err => {
-                Swal.fire("Error", "Ocurrió un error al eliminar el pais.", "error");
+                Swal.fire("Error", "Ocurrió un error al eliminar el dia.", "error");
               });
             }
           });

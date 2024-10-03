@@ -1,60 +1,59 @@
 from flask import Blueprint, request, jsonify, current_app as app
-from app.dao.referenciales.pais.PaisDao import PaisDao
+from app.dao.referenciales.Dia.DiaDao import DiaDao
 
-paiapi = Blueprint('paiapi', __name__)
+diaapi = Blueprint('diaapi', __name__)
 
-# Trae todas los
-@paiapi.route('/paises', methods=['GET'])
-def getPaises():
-    paidao = PaisDao()
+# Trae todas las ciudades
+@diaapi.route('/dias', methods=['GET'])
+def getDias():
+    diadao = DiaDao()
 
     try:
-        paises = paidao.getPais()
-
+        dias = diadao.getDias()
         return jsonify({
             'success': True,
-            'data': paises,
+            'data': dias,
             'error': None
         }), 200
 
     except Exception as e:
-        app.logger.error(f"Error al obtener el pais: {str(e)}")
+        app.logger.error(f"Error al obtener todas las dias: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@paiapi.route('/paises/<int:pais_id>', methods=['GET'])
-def getPais(pais_id):
-    paisdao = PaisDao()
+@diaapi.route('/dias/<int:dia_id>', methods=['GET'])
+def getDia(dia_id):
+    diadao = DiaDao()
 
     try:
-        pais = paisdao.getPaisById(pais_id)
+        dia = diadao.getDiasById(dia_id)
 
-        if pais:
+        if dia:
             return jsonify({
                 'success': True,
-                'data': pais,
+                'data': dia,
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró la pais con el ID proporcionado.'
+                'error': 'No se encontró el dia con el ID proporcionado.'
             }), 404
 
     except Exception as e:
-        app.logger.error(f"Error al obtener pais: {str(e)}")
+        app.logger.error(f"Error al obtener dia: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
 # Agrega una nueva ciudad
-@paiapi.route('/paises', methods=['POST'])
-def addPais():
+@diaapi.route('/dias', methods=['POST'])
+def addDia():
     data = request.get_json()
-    paisdao = PaisDao()
+    diadao = DiaDao()
 
     # Validar que el JSON no esté vacío y tenga las propiedades necesarias
     campos_requeridos = ['descripcion']
@@ -69,26 +68,26 @@ def addPais():
 
     try:
         descripcion = data['descripcion'].upper()
-        pais_id = paisdao.guardarpais(descripcion)
-        if pais_id is not None:
+        dia_id = diadao.guardarDia(descripcion)
+        if dia_id is not None:
             return jsonify({
                 'success': True,
-                'data': {'id': pais_id, 'descripcion': descripcion},
+                'data': {'id': dia_id, 'descripcion': descripcion},
                 'error': None
             }), 201
         else:
-            return jsonify({ 'success': False, 'error': 'No se pudo guardar la ciudad. Consulte con el administrador.' }), 500
+            return jsonify({ 'success': False, 'error': 'No se pudo guardar el dia. Consulte con el administrador.' }), 500
     except Exception as e:
-        app.logger.error(f"Error al agregar ciudad: {str(e)}")
+        app.logger.error(f"Error al agregar dia: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@paiapi.route('/paises/<int:pais_id>', methods=['PUT'])
-def updatePais(pais_id):
+@diaapi.route('/dias/<int:dia_id>', methods=['PUT'])
+def updateDia(dia_id):
     data = request.get_json()
-    paisdao = PaisDao()
+    diadao = DiaDao()
 
     # Validar que el JSON no esté vacío y tenga las propiedades necesarias
     campos_requeridos = ['descripcion']
@@ -102,44 +101,44 @@ def updatePais(pais_id):
                             }), 400
     descripcion = data['descripcion']
     try:
-        if paisdao.updatePais(pais_id, descripcion):
+        if diadao.updateDia(dia_id, descripcion):
             return jsonify({
                 'success': True,
-                'data': {'id': pais_id, 'descripcion': descripcion},
+                'data': {'id': dia_id, 'descripcion': descripcion},
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró la pais con el ID proporcionado o no se pudo actualizar.'
+                'error': 'No se encontró el dia con el ID proporcionado o no se pudo actualizar.'
             }), 404
     except Exception as e:
-        app.logger.error(f"Error al actualizar pais: {str(e)}")
+        app.logger.error(f"Error al actualizar dia: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@paiapi.route('/paises/<int:pais_id>', methods=['DELETE'])
-def deletePais(pais_id):
-    paisdao = PaisDao()
+@diaapi.route('/dias/<int:dia_id>', methods=['DELETE'])
+def deleteDia(dia_id):
+    diadao = DiaDao()
 
     try:
         # Usar el retorno de eliminarCiudad para determinar el éxito
-        if paisdao.deletePais(pais_id):
+        if diadao.deleteDia(dia_id):
             return jsonify({
                 'success': True,
-                'mensaje': f'pais con ID {pais_id} eliminada correctamente.',
+                'mensaje': f'Dia con ID {dia_id} eliminada correctamente.',
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró el pais con el ID proporcionado o no se pudo eliminar.'
+                'error': 'No se encontró el dia con el ID proporcionado o no se pudo eliminar.'
             }), 404
 
     except Exception as e:
-        app.logger.error(f"Error al eliminar pais: {str(e)}")
+        app.logger.error(f"Error al eliminar dia: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'

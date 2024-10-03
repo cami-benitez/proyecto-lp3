@@ -87,6 +87,8 @@ Personas
       ajax:'/api/v1/personas',      
       columns: [
         { data: 'descripcion' },
+        { data: 'apellido' },
+        { data: 'cedula' },
         { data: function(row) {
             return `<button type="button" name="btn_editar" class="btn btn-primary" data-id="${row.id}">Editar</button>
                     <button type="button" name="btn_eliminar" class="btn btn-danger" data-id="${row.id}">Eliminar</button>`
@@ -157,6 +159,8 @@ Personas
         });
       }
       $('#txtDescripcion').val("");
+      $('#txtapellido').val("");
+      $('#txtcedula').val("");
       $('#modalFormulario').modal("hide");
     });
   }
