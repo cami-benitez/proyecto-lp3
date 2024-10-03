@@ -41,14 +41,10 @@ from app.rutas.referenciales.turno.turno_api import turapi
 version1 = '/api/v1'
 app.register_blueprint(ciuapi, url_prefix=version1)
 
-version1 = '/api/v1'
 app.register_blueprint(paiapi, url_prefix=version1)
 
-version1 = '/api/v1'
 app.register_blueprint(perapi, url_prefix=version1)
 
-version1 = '/api/v1'
 app.register_blueprint(diaapi, url_prefix=version1)
 
-version1 = '/api/v1'
 app.register_blueprint(turapi, url_prefix=version1)
