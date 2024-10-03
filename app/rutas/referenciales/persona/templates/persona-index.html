@@ -105,6 +105,8 @@ Personas
       // inicia ventana modal
       $('#txtIdPersona').val("");
       $('#txtDescripcion').val("");
+      $('#txtapellido').val("");
+      $('#txtcedula').val("");
       $('#modalFormulario').modal();
     });
   }
@@ -114,7 +116,7 @@ Personas
   const guardar = () => {
     $('#btnGuardar').on('click', function() {
       const idPersona = $('#txtIdPersona').val();
-      const nuevoDescripcion=$('#txtDescricion').val("");
+      const nuevaDescripcion=$('#txtDescricion').val("");
       const tabla = $('#tbl').DataTable();
 
       if(idPersona) {
@@ -123,7 +125,7 @@ Personas
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
-          }, body: JSON.stringify({ descripcion: nuevaDescripcion})
+          }, body: JSON.stringify({ descripcion: nuevaDescripcion })
         })
         .then(resp => resp.json())
         .then(data => {
@@ -178,9 +180,10 @@ Personas
           //Swal.fire("Saved!", "", "success");
           $('#modalTitle').text("Editar una Persona");
 
-          const idPersona = $(this).data('id');
+          const idPersona = $(this).data('id,descripcion,apellido,cedula');
           $('#txtIdPersona').val(idPersona);
-
+          $('#txtapellido').val("");
+          $('#txtcedula').val("");
           // Necesitamos obtener la descripción del backend
           fetch(`/api/v1/personas/${idPersona}`, {
             method: 'GET',
@@ -191,6 +194,8 @@ Personas
           .then(resp => resp.json())
           .then(data => {
          $('#txtNombre').val("");(data.data.descripcion);
+         $('#txtapellido').val("");(data.data.descripcion);
+         $('#txtcedula').val("");(data.data.descripcion);
             $('#modalFormulario').modal();
           });
         }

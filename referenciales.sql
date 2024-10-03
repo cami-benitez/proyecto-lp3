@@ -16,3 +16,11 @@ CREATE TABLE
         id serial PRIMARY KEY 
         , descripcion varchar(60) UNIQUE
     );
+    
+    CREATE TABLE 
+    turno(
+        id serial PRIMARY KEY 
+        , descripcion varchar(60) UNIQUE
+    );
+    
+    

@@ -1,60 +1,60 @@
 from flask import Blueprint, request, jsonify, current_app as app
-from app.dao.referenciales.persona.PersonaDao import PersonaDao
+from app.dao.referenciales.turno.TurnoDao import TurnoDao
 
-perapi = Blueprint('perapi', __name__)
+turapi = Blueprint('turapi', __name__)
 
-# Trae todas las personas
-@perapi.route('/personas', methods=['GET'])
-def getPersonas():
-    perdao = PersonaDao()
+# Trae todas las ciudades
+@turapi.route('/turnos', methods=['GET'])
+def getTurnos():
+    turdao = TurnoDao()
 
     try:
-        personas = perdao.getPersona()
+        turnos = turdao.getTurnos()
 
         return jsonify({
             'success': True,
-            'data': personas,
+            'data': turnos,
             'error': None
         }), 200
 
     except Exception as e:
-        app.logger.error(f"Error al obtener todas las personas: {str(e)}")
+        app.logger.error(f"Error al obtener todas los turnos: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@perapi.route('/personas/<int:persona_id>', methods=['GET'])
-def getPersona(persona_id):
-    perdao = PersonaDao()
+@turapi.route('/turnos/<int:turno_id>', methods=['GET'])
+def getTurno(turno_id):
+    turdao = TurnoDao()
 
     try:
-        persona = perdao.getPersonaById(persona_id)
+        turno= turdao.getTurnoById(turno_id)
 
-        if persona:
+        if turno:
             return jsonify({
                 'success': True,
-                'data': persona,
+                'data': turno,
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró la persona con el ID proporcionado.'
+                'error': 'No se encontró el turno con el ID proporcionado.'
             }), 404
 
     except Exception as e:
-        app.logger.error(f"Error al obtener persona: {str(e)}")
+        app.logger.error(f"Error al obtener turno: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-# Agrega una nueva persona
-@perapi.route('/personas', methods=['POST'])
-def addPersona():
+# Agrega una nueva ciudad
+@turapi.route('/turnos', methods=['POST'])
+def addTurno():
     data = request.get_json()
-    perdao = PersonaDao()
+    turdao = TurnoDao()
 
     # Validar que el JSON no esté vacío y tenga las propiedades necesarias
     campos_requeridos = ['descripcion']
@@ -69,26 +69,26 @@ def addPersona():
 
     try:
         descripcion = data['descripcion'].upper()
-        persona_id = perdao.guardarPersona(descripcion)
-        if persona_id is not None:
+        turno_id = turdao.guardarTurno(descripcion)
+        if turno_id is not None:
             return jsonify({
                 'success': True,
-                'data': {'id': persona_id, 'descripcion': descripcion},
+                'data': {'id': turno_id, 'descripcion': descripcion},
                 'error': None
             }), 201
         else:
-            return jsonify({ 'success': False, 'error': 'No se pudo guardar la persona. Consulte con el administrador.' }), 500
+            return jsonify({ 'success': False, 'error': 'No se pudo guardarel turno. Consulte con el administrador.' }), 500
     except Exception as e:
-        app.logger.error(f"Error al agregar persona: {str(e)}")
+        app.logger.error(f"Error al agregar turno: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@perapi.route('/personas/<int:persona_id>', methods=['PUT'])
-def updatePersona(persona_id):
+@turapi.route('/turnos/<int:turno_id>', methods=['PUT'])
+def updateTurno(turno_id):
     data = request.get_json()
-    perdao = PersonaDao()
+    turdao = TurnoDao()
 
     # Validar que el JSON no esté vacío y tenga las propiedades necesarias
     campos_requeridos = ['descripcion']
@@ -102,44 +102,44 @@ def updatePersona(persona_id):
                             }), 400
     descripcion = data['descripcion']
     try:
-        if perdao.updatePersona(persona_id, descripcion.upper()):
+        if turdao.updateTurno(turno_id, descripcion):
             return jsonify({
                 'success': True,
-                'data': {'id': persona_id, 'descripcion': descripcion},
+                'data': {'id': turno_id, 'descripcion': descripcion},
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró la persona con el ID proporcionado o no se pudo actualizar.'
+                'error': 'No se encontró rl turno con el ID proporcionado o no se pudo actualizar.'
             }), 404
     except Exception as e:
-        app.logger.error(f"Error al actualizar persona: {str(e)}")
+        app.logger.error(f"Error al actualizar turno: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@perapi.route('/personas/<int:persona_id>', methods=['DELETE'])
-def deletePersona(persona_id):
-    perdao = PersonaDao()
+@turapi.route('/turnos/<int:turno_id>', methods=['DELETE'])
+def deleteTurno(turno_id):
+    turdao = TurnoDao()
 
     try:
-        # Usar el retorno de eliminarPersona para determinar el éxito
-        if perdao.deletePersona(persona_id):
+        # Usar el retorno de eliminarCiudad para determinar el éxito
+        if turdao.deleteTurno(turno_id):
             return jsonify({
                 'success': True,
-                'mensaje': f'Persona con ID {persona_id} eliminada correctamente.',
+                'mensaje': f'Turno con ID {turno_id} eliminada correctamente.',
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró la persona con el ID proporcionado o no se pudo eliminar.'
+                'error': 'No se encontró el turno con el ID proporcionado o no se pudo eliminar.'
             }), 404
 
     except Exception as e:
-        app.logger.error(f"Error al eliminar persona: {str(e)}")
+        app.logger.error(f"Error al eliminar turno: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
