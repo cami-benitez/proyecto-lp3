@@ -30,4 +30,9 @@ CREATE TABLE
     );
     
     
+    CREATE TABLE 
+    Diagnostico(
+        id serial PRIMARY KEY 
+        , descripcion varchar(60) UNIQUE
+    );
     

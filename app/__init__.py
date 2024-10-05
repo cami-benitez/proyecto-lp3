@@ -10,6 +10,8 @@ from app.rutas.referenciales.persona.persona_route import permod
 from app.rutas.referenciales.dia.dia_route import diamod
 from app.rutas.referenciales.turno.turno_route import turmod
 from app.rutas.referenciales.sexo.sexo_route import sexmod
+from app.rutas.referenciales.diagnostico.diagnostico_route import diagmod
+
 
 # registrar referenciales 
 modulo0 ='/referenciales'
@@ -43,6 +45,11 @@ app.register_blueprint(sexmod, url_prefix=f'{modulo0}/sexo')
 
 from app.rutas.referenciales.sexo.sexo_api import sexapi
 
+modulo0 = '/referenciales'
+app.register_blueprint(diagmod, url_prefix=f'{modulo0}/Diagnostico')
+
+from app.rutas.referenciales.diagnostico.diagnostico_api import diagapi
+
 
 # APIS v1
 version1 = '/api/v1'
@@ -57,3 +64,5 @@ app.register_blueprint(diaapi, url_prefix=version1)
 app.register_blueprint(turapi, url_prefix=version1)
 
 app.register_blueprint(sexapi, url_prefix=version1)
+
+app.register_blueprint(diagapi, url_prefix=version1)
