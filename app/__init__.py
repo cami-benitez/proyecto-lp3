@@ -11,6 +11,7 @@ from app.rutas.referenciales.dia.dia_route import diamod
 from app.rutas.referenciales.turno.turno_route import turmod
 from app.rutas.referenciales.sexo.sexo_route import sexmod
 from app.rutas.referenciales.diagnostico.diagnostico_route import diagmod
+from app.rutas.referenciales.estadocivil.estadocivil_route import estmod
 
 
 # registrar referenciales 
@@ -50,6 +51,10 @@ app.register_blueprint(diagmod, url_prefix=f'{modulo0}/Diagnostico')
 
 from app.rutas.referenciales.diagnostico.diagnostico_api import diagapi
 
+modulo0 = '/referenciales'
+app.register_blueprint(estmod, url_prefix=f'{modulo0}/Estadocivil')
+
+from app.rutas.referenciales.estadocivil.estadocivil_api import estapi
 
 # APIS v1
 version1 = '/api/v1'
@@ -66,3 +71,5 @@ app.register_blueprint(turapi, url_prefix=version1)
 app.register_blueprint(sexapi, url_prefix=version1)
 
 app.register_blueprint(diagapi, url_prefix=version1)
+
+app.register_blueprint(estapi, url_prefix=version1)
