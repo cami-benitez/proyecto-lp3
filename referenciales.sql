@@ -22,5 +22,12 @@ CREATE TABLE
         id serial PRIMARY KEY 
         , descripcion varchar(60) UNIQUE
     );
+
+    CREATE TABLE 
+    Sexo(
+        id serial PRIMARY KEY 
+        , descripcion varchar(60) UNIQUE
+    );
+    
     
     

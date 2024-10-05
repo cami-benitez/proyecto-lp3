@@ -9,6 +9,7 @@ from app.rutas.referenciales.pais.pais_route import paimod
 from app.rutas.referenciales.persona.persona_route import permod
 from app.rutas.referenciales.dia.dia_route import diamod
 from app.rutas.referenciales.turno.turno_route import turmod
+from app.rutas.referenciales.sexo.sexo_route import sexmod
 
 # registrar referenciales 
 modulo0 ='/referenciales'
@@ -37,6 +38,12 @@ app.register_blueprint(turmod, url_prefix=f'{modulo0}/turno')
 
 from app.rutas.referenciales.turno.turno_api import turapi
 
+modulo0 = '/referenciales'
+app.register_blueprint(sexmod, url_prefix=f'{modulo0}/sexo')
+
+from app.rutas.referenciales.sexo.sexo_api import sexapi
+
+
 # APIS v1
 version1 = '/api/v1'
 app.register_blueprint(ciuapi, url_prefix=version1)
@@ -48,3 +55,5 @@ app.register_blueprint(perapi, url_prefix=version1)
 app.register_blueprint(diaapi, url_prefix=version1)
 
 app.register_blueprint(turapi, url_prefix=version1)
+
+app.register_blueprint(sexapi, url_prefix=version1)
