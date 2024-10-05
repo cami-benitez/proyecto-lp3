@@ -42,3 +42,9 @@ CREATE TABLE
         , descripcion varchar(60) UNIQUE
     );
     
+    CREATE TABLE 
+    enfermedad(
+        id serial PRIMARY KEY 
+        , descripcion varchar(60) UNIQUE
+    );
+    
