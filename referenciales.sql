@@ -48,3 +48,9 @@ CREATE TABLE
         , descripcion varchar(60) UNIQUE
     );
     
+    CREATE TABLE 
+    ocupacion(
+        id serial PRIMARY KEY 
+        , descripcion varchar(60) UNIQUE
+    );
+    
