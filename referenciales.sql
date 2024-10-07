@@ -53,4 +53,11 @@ CREATE TABLE
         id serial PRIMARY KEY 
         , descripcion varchar(60) UNIQUE
     );
+
+    CREATE TABLE 
+    cita(
+        id serial PRIMARY KEY 
+        , descripcion varchar(60) UNIQUE
+    );
+    
     

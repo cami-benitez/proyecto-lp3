@@ -49,7 +49,7 @@ Personas
           <input type="text" class="form-control" placeholder="Ingrese su nombre" id="txtDescripcion">
           <label for="txtApellido">Apellido:</label>
           <input type="text" class="form-control" placeholder="Ingrese su apellido" id="txtApellido">
-          <label for="txtCedula">N° de cédula:</label>
+          <label for="txtCedula">cedula:</label>
           <input type="text" class="form-control" placeholder="Ingrese su n° de cédula" id="txtCedula"> 
        </div>
       </div> 
@@ -84,7 +84,7 @@ Personas
       language: {
         url: "{{ url_for('static', filename='vendor/datatables/es-ES.json') }}",
       },
-      ajax:'/api/v1/personas',      
+      ajax:'/api/v1/persona', 
       columns: [
         { data: 'descripcion' },
         { data: 'apellido' },
@@ -105,8 +105,6 @@ Personas
       // inicia ventana modal
       $('#txtIdPersona').val("");
       $('#txtDescripcion').val("");
-      $('#txtapellido').val("");
-      $('#txtcedula').val("");
       $('#modalFormulario').modal();
     });
   }
@@ -121,7 +119,7 @@ Personas
 
       if(idPersona) {
         // update
-        fetch(`/api/v1/personas/${idPersona}`, {
+        fetch(`/api/v1/persona/${idPersona}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -141,7 +139,7 @@ Personas
         });
       } else {
         // insert
-        fetch(`/api/v1/personas`, {
+        fetch(`/api/v1/persona`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -161,8 +159,6 @@ Personas
         });
       }
       $('#txtDescripcion').val("");
-      $('#txtapellido').val("");
-      $('#txtcedula').val("");
       $('#modalFormulario').modal("hide");
     });
   }
@@ -182,10 +178,8 @@ Personas
 
           const idPersona = $(this).data('id,descripcion,apellido,cedula');
           $('#txtIdPersona').val(idPersona);
-          $('#txtapellido').val("");
-          $('#txtcedula').val("");
           // Necesitamos obtener la descripción del backend
-          fetch(`/api/v1/personas/${idPersona}`, {
+          fetch(`/api/v1/persona/${idPersona}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json'
@@ -194,8 +188,6 @@ Personas
           .then(resp => resp.json())
           .then(data => {
          $('#txtNombre').val("");(data.data.descripcion);
-         $('#txtapellido').val("");(data.data.descripcion);
-         $('#txtcedula').val("");(data.data.descripcion);
             $('#modalFormulario').modal();
           });
         }
@@ -214,7 +206,7 @@ Personas
         cancelButtonText: `No`
       }).then((result) => {
         if (result.isConfirmed) {
-          fetch(`/api/v1/personas/${idPersona}`, {
+          fetch(`/api/v1/persona/${idPersona}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json'

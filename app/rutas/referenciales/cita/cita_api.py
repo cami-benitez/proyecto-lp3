@@ -1,60 +1,60 @@
 from flask import Blueprint, request, jsonify, current_app as app
-from app.dao.referenciales.persona.PersonaDao import PersonaDao
+from app.dao.referenciales.cita.CitaDao import CitaDao
 
-perapi = Blueprint('perapi', __name__)
+citapi = Blueprint('citapi', __name__)
 
-# Trae todas las personas
-@perapi.route('/persona', methods=['GET'])
-def getPersonas():
-    perdao = PersonaDao()
+# Trae todas las ciudades
+@citapi.route('/cita', methods=['GET'])
+def getCita():
+    citdao = CitaDao()
 
     try:
-        personas = perdao.getPersona()
+        cita = citdao.getCita()
 
         return jsonify({
             'success': True,
-            'data': personas,
+            'data': cita,
             'error': None
         }), 200
 
     except Exception as e:
-        app.logger.error(f"Error al obtener todas las personas: {str(e)}")
+        app.logger.error(f"Error al obtener todas las citas: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@perapi.route('/persona/<int:persona_id>', methods=['GET'])
-def getPersona(persona_id):
-    perdao = PersonaDao()
+@citapi.route('/cita/<int:cita_id>', methods=['GET'])
+def getCitas(cita_id):
+    citdao = CitaDao()
 
     try:
-        persona = perdao.getPersonaById(persona_id)
+        cita = citdao.getCitaById(cita_id)
 
-        if persona:
+        if cita:
             return jsonify({
                 'success': True,
-                'data': persona,
+                'data': cita,
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró la persona con el ID proporcionado.'
+                'error': 'No se encontró la cita con el ID proporcionado.'
             }), 404
 
     except Exception as e:
-        app.logger.error(f"Error al obtener persona: {str(e)}")
+        app.logger.error(f"Error al obtener cita: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-# Agrega una nueva persona
-@perapi.route('/persona', methods=['POST'])
-def addPersona():
+# Agrega una nueva ciudad
+@citapi.route('/cita', methods=['POST'])
+def addCita():
     data = request.get_json()
-    perdao = PersonaDao()
+    citdao = CitaDao()
 
     # Validar que el JSON no esté vacío y tenga las propiedades necesarias
     campos_requeridos = ['descripcion']
@@ -69,26 +69,26 @@ def addPersona():
 
     try:
         descripcion = data['descripcion'].upper()
-        persona_id = perdao.guardarPersona(descripcion)
-        if persona_id is not None:
+        cita_id = citdao.guardarCita(descripcion)
+        if cita_id is not None:
             return jsonify({
                 'success': True,
-                'data': {'id': persona_id, 'descripcion': descripcion},
+                'data': {'id': cita_id, 'descripcion': descripcion},
                 'error': None
             }), 201
         else:
-            return jsonify({ 'success': False, 'error': 'No se pudo guardar la persona. Consulte con el administrador.' }), 500
+            return jsonify({ 'success': False, 'error': 'No se pudo guardar la cita. Consulte con el administrador.' }), 500
     except Exception as e:
-        app.logger.error(f"Error al agregar persona: {str(e)}")
+        app.logger.error(f"Error al agregar cita: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@perapi.route('/persona/<int:persona_id>', methods=['PUT'])
-def updatePersona(persona_id):
+@citapi.route('/cita/<int:cita_id>', methods=['PUT'])
+def updateCita(cita_id):
     data = request.get_json()
-    perdao = PersonaDao()
+    citdao = CitaDao()
 
     # Validar que el JSON no esté vacío y tenga las propiedades necesarias
     campos_requeridos = ['descripcion']
@@ -102,44 +102,44 @@ def updatePersona(persona_id):
                             }), 400
     descripcion = data['descripcion']
     try:
-        if perdao.updatePersona(persona_id, descripcion.upper()):
+        if citdao.updateCita(cita_id, descripcion):
             return jsonify({
                 'success': True,
-                'data': {'id': persona_id, 'descripcion': descripcion},
+                'data': {'id': cita_id, 'descripcion': descripcion},
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró la persona con el ID proporcionado o no se pudo actualizar.'
+                'error': 'No se encontró la cita con el ID proporcionado o no se pudo actualizar.'
             }), 404
     except Exception as e:
-        app.logger.error(f"Error al actualizar persona: {str(e)}")
+        app.logger.error(f"Error al actualizar cita: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@perapi.route('/persona/<int:persona_id>', methods=['DELETE'])
-def deletePersona(persona_id):
-    perdao = PersonaDao()
+@citapi.route('/cita/<int:cita_id>', methods=['DELETE'])
+def deleteCita(cita_id):
+    citdao = CitaDao()
 
     try:
-        # Usar el retorno de eliminarPersona para determinar el éxito
-        if perdao.deletePersona(persona_id):
+        # Usar el retorno de eliminarCiudad para determinar el éxito
+        if citdao.deleteCita(cita_id):
             return jsonify({
                 'success': True,
-                'mensaje': f'Persona con ID {persona_id} eliminada correctamente.',
+                'mensaje': f'cita con ID {cita_id} eliminada correctamente.',
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró la persona con el ID proporcionado o no se pudo eliminar.'
+                'error': 'No se encontró la cita con el ID proporcionado o no se pudo eliminar.'
             }), 404
 
     except Exception as e:
-        app.logger.error(f"Error al eliminar persona: {str(e)}")
+        app.logger.error(f"Error al eliminar cita: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'

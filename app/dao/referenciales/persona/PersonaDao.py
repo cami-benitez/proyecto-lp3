@@ -7,8 +7,8 @@ class PersonaDao:
     def getPersona(self):
 
         personaSQL = """
-        SELECT id, descripcion, apellido, numero_cedula
-        FROM personas
+        SELECT id, descripcion
+        FROM persona
         """
         # objeto conexion
         conexion = Conexion()
@@ -16,10 +16,10 @@ class PersonaDao:
         cur = con.cursor()
         try:
             cur.execute(personaSQL)
-            personas = cur.fetchall() # trae datos de la bd
+            persona = cur.fetchall() # trae datos de la bd
 
             # Transformar los datos en una lista de diccionarios
-            return [{'id': persona[0], 'descripcion': persona[1], 'apellido': persona[2], 'cedula': persona[3]} for persona in personas]
+            return [{'id': persona[0], 'descripcion': persona[1], 'apellido': persona[2], 'cedula': persona[3]} for persona in persona]
 
         except Exception as e:
             app.logger.error(f"Error al obtener todas las personas: {str(e)}")
@@ -32,8 +32,8 @@ class PersonaDao:
     def getPersonaById(self, id):
 
         personaSQL = """
-        SELECT id, descripción, apellido, numero_cedula
-        FROM personas WHERE id=%s
+        SELECT id, descripción
+        FROM persona WHERE id=%s
         """
         # objeto conexion
         conexion = Conexion()
@@ -62,7 +62,7 @@ class PersonaDao:
     def guardarPersona(self, descripcion, apellido, numero_cedula):
 
         insertPersonaSQL = """
-   INSERT INTO personas(descripción, apellido, numero_cedula) VALUES(%s, %s,%s) RETURNING id        
+   INSERT INTO persona(descripción) VALUES(%s) RETURNING id        
    """
 
         conexion = Conexion()
@@ -90,10 +90,8 @@ class PersonaDao:
     def updatePersona(self,id, descripcion, apellido, numero_cedula):
 
         updatePersonaSQL = """
-        UPDATE personas
+        UPDATE persona
         SET descripcion=%s
-        SET apellido=%s
-        SET numero_cedula=%s
         WHERE id=%s
         """
 
@@ -120,7 +118,7 @@ class PersonaDao:
     def deletePersona(self, id):
 
         updatePersonaSQL = """
-        DELETE FROM personas
+        DELETE FROM persona
         WHERE id=%s
         """
 
@@ -136,7 +134,7 @@ class PersonaDao:
 
             return rows_affected > 0  # Retornar True si se eliminó al menos una fila        
         except Exception as e:
-            app.logger.error(f"Error al eliminar persona: {str(e)}")
+            app.logger.error(f"Error al eliminar personas: {str(e)}")
             con.rollback()
             return False
 
