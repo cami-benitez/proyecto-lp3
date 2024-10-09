@@ -59,5 +59,11 @@ CREATE TABLE
         id serial PRIMARY KEY 
         , descripcion varchar(60) UNIQUE
     );
+
+    CREATE TABLE 
+    pago(
+        id serial PRIMARY KEY 
+        , descripcion varchar(60) UNIQUE
+    );
     
     
