@@ -18,6 +18,7 @@ from app.rutas.referenciales.cita.cita_route import citmod
 from app.rutas.referenciales.medico.medico_route import medmod
 from app.rutas.referenciales.pago.pago_route import pagmod
 from app.rutas.referenciales.horario.horario_route import hormod
+from app.rutas.referenciales.servicio.servicio_route import sermod
 
 
 
@@ -93,6 +94,11 @@ app.register_blueprint(hormod, url_prefix=f'{modulo0}/Horario')
 
 from app.rutas.referenciales.horario.horario_api import horapi
 
+modulo0 = '/referenciales'
+app.register_blueprint(sermod, url_prefix=f'{modulo0}/Servicio')
+
+from app.rutas.referenciales.servicio.servicio_api import serapi
+
 # APIS v1
 version1 = '/api/v1'
 app.register_blueprint(ciuapi, url_prefix=version1)
@@ -122,3 +128,5 @@ app.register_blueprint(medapi, url_prefix=version1)
 app.register_blueprint(pagapi, url_prefix=version1)
 
 app.register_blueprint(horapi, url_prefix=version1)
+
+app.register_blueprint(serapi, url_prefix=version1)
