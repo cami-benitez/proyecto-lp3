@@ -65,5 +65,11 @@ CREATE TABLE
         id serial PRIMARY KEY 
         , descripcion varchar(60) UNIQUE
     );
+
+    CREATE TABLE 
+    horario(
+        id serial PRIMARY KEY 
+        , descripcion varchar(60) UNIQUE
+    );
     
     
