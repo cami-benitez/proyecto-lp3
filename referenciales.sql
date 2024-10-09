@@ -78,4 +78,10 @@ CREATE TABLE
         , descripcion varchar(60) UNIQUE
     );
     
+    CREATE TABLE 
+    persona(
+        id serial PRIMARY KEY 
+        , descripcion varchar(60) UNIQUE
+    );
+    
     

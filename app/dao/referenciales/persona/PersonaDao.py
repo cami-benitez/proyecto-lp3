@@ -1,4 +1,3 @@
-# Data access object - DAO
 from flask import current_app as app
 from app.conexion.conexion import Conexion
 
@@ -8,23 +7,21 @@ class PersonaDao:
 
         personaSQL = """
         SELECT id, descripcion
-        FROM personas
+        FROM  persona
         """
         # objeto conexion
         conexion = Conexion()
         con = conexion.getConexion()
         cur = con.cursor()
         try:
-            cur.execute(personaSQL)
-            personas = cur.fetchall() # trae datos de la bd
-
+            cur.execute( personaSQL)
+            persona = cur.fetchall() # trae datos de la bd
+            
             # Transformar los datos en una lista de diccionarios
-            return [{'id': persona[0], 'descripcion': persona[1], 'apellido': persona[2], 'cedula': persona[3]} for persona in personas]
-
+            return [{'id':  persona[0], 'descripcion':  persona[1]} for  persona in  persona]
         except Exception as e:
-            app.logger.error(f"Error al obtener todas las personas: {str(e)}")
-            return []
-
+            app.logger.error(f"Error al obtener todas las  persona: {str(e)}")
+            return []    
         finally:
             cur.close()
             con.close()
@@ -32,38 +29,35 @@ class PersonaDao:
     def getPersonaById(self, id):
 
         personaSQL = """
-        SELECT id, descripción
-        FROM personas WHERE id=%s
+        SELECT id, descripcion
+        FROM  persona WHERE id=%s
         """
         # objeto conexion
         conexion = Conexion()
         con = conexion.getConexion()
         cur = con.cursor()
         try:
-            cur.execute(personaSQL, (id,))
+            cur.execute( personaSQL, (id,))
             personaEncontrada = cur.fetchone() # Obtener una sola fila
-            if personaEncontrada:
+            if  personaEncontrada:
                 return {
-                        "id": personaEncontrada[0],
-                        "descripcion": personaEncontrada[1],
-                        "apellido": personaEncontrada[2],
-                        "cedula": personaEncontrada[3],
-                    }  # Retornar los datos de la persona
+                        "id":  personaEncontrada[0],
+                        "descripcion":  personaEncontrada[1]
+                    }  # Retornar los datos de la ciudad
             else:
-                return None # Retornar None si no se encuentra la persona
+                return None # Retornar None si no se encuentra la ciudad
         except Exception as e:
-            app.logger.error(f"Error al obtener persona: {str(e)}")
+            app.logger.error(f"Error al obtener  persona: {str(e)}")
             return None
-
         finally:
             cur.close()
             con.close()
 
-    def guardarPersona(self, descripcion, apellido, cedula):
+    def guardarPersona(self, descripcion):
 
         insertPersonaSQL = """
-   INSERT INTO personas(descripción) VALUES(%s) RETURNING id        
-   """
+        INSERT INTO  persona(descripcion) VALUES(%s) RETURNING id
+        """
 
         conexion = Conexion()
         con = conexion.getConexion()
@@ -71,26 +65,28 @@ class PersonaDao:
 
         # Ejecucion exitosa
         try:
-            cur.execute(insertPersonaSQL, (descripcion, apellido, cedula))
+            cur.execute(insertPersonaSQL, (descripcion,))
             persona_id = cur.fetchone()[0]
             con.commit() # se confirma la insercion
-            return persona_id
-        
+            return  persona_id
+
         # Si algo fallo entra aqui
         except Exception as e:
-            app.logger.error(f"Error al insertar persona: {str(e)}")
+            app.logger.error(f"Error al insertar  persona: {str(e)}")
             con.rollback() # retroceder si hubo error
             return False
 
-          # Siempre se va ejecutar
+
+        # Siempre se va ejecutar
         finally:
             cur.close()
             con.close()
 
-    def updatePersona(self,id, descripcion, apellido, cedula):
+
+    def updatePersona(self, id, descripcion):
 
         updatePersonaSQL = """
-        UPDATE personas
+        UPDATE  persona
         SET descripcion=%s
         WHERE id=%s
         """
@@ -99,26 +95,28 @@ class PersonaDao:
         con = conexion.getConexion()
         cur = con.cursor()
 
+        # Ejecucion exitosa
         try:
-            cur.execute(updatePersonaSQL, (apellido, cedula, descripcion, id))
-            filas_afectadas = cur.rowcount # Obtener el número de filas afectadas            con.commit()
+            cur.execute(updatePersonaSQL, (descripcion, id,))
+            filas_afectadas = cur.rowcount # Obtener el número de filas afectadas
             con.commit()
-        
-            return filas_afectadas > 0 # Retornar True si se actualizó al menos una fila
 
+            return filas_afectadas > 0 # Retornar True si se actualizó al menos una fila   
         except Exception as e:
-            app.logger.error(f"Error al actualizar persona: {str(e)}")
+            app.logger.error(f"Error al actualizar  persona: {str(e)}")
             con.rollback()
-            return False 
-               
+            return False
+       
+        # Siempre se va ejecutar
         finally:
             cur.close()
             con.close()
 
+
     def deletePersona(self, id):
 
         updatePersonaSQL = """
-        DELETE FROM personas
+        DELETE FROM persona
         WHERE id=%s
         """
 
@@ -132,9 +130,10 @@ class PersonaDao:
             rows_affected = cur.rowcount
             con.commit()
 
-            return rows_affected > 0  # Retornar True si se eliminó al menos una fila        
+            return rows_affected > 0  # Retornar True si se eliminó al menos una fila 
+
         except Exception as e:
-            app.logger.error(f"Error al eliminar personas: {str(e)}")
+            app.logger.error(f"Error al eliminar  persona: {str(e)}")
             con.rollback()
             return False
 

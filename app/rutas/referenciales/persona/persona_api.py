@@ -3,29 +3,29 @@ from app.dao.referenciales.persona.PersonaDao import PersonaDao
 
 perapi = Blueprint('perapi', __name__)
 
-# Trae todas las personas
-@perapi.route('/personas', methods=['GET'])
-def getPersonas():
+# Trae todas las ciudades
+@perapi.route('/persona', methods=['GET'])
+def getPersona():
     perdao = PersonaDao()
 
     try:
-        personas = perdao.getPersona()
+        persona = perdao.getPersona()
 
         return jsonify({
             'success': True,
-            'data': personas,
+            'data': persona,
             'error': None
         }), 200
 
     except Exception as e:
-        app.logger.error(f"Error al obtener todas las personas: {str(e)}")
+        app.logger.error(f"Error al obtener todas las persona: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
 @perapi.route('/persona/<int:persona_id>', methods=['GET'])
-def getPersona(persona_id):
+def getPersonas(persona_id):
     perdao = PersonaDao()
 
     try:
@@ -50,14 +50,14 @@ def getPersona(persona_id):
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-# Agrega una nueva persona
-@perapi.route('/personas', methods=['POST'])
+# Agrega una nueva ciudad
+@perapi.route('/persona', methods=['POST'])
 def addPersona():
     data = request.get_json()
     perdao = PersonaDao()
 
     # Validar que el JSON no esté vacío y tenga las propiedades necesarias
-    campos_requeridos = ['descripcion', 'apellido', 'cedula']
+    campos_requeridos = ['descripcion']
 
     # Verificar si faltan campos o son vacíos
     for campo in campos_requeridos:
@@ -85,7 +85,7 @@ def addPersona():
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@perapi.route('/personas/<int:persona_id>', methods=['PUT'])
+@perapi.route('/persona/<int:persona_id>', methods=['PUT'])
 def updatePersona(persona_id):
     data = request.get_json()
     perdao = PersonaDao()
@@ -102,7 +102,7 @@ def updatePersona(persona_id):
                             }), 400
     descripcion = data['descripcion']
     try:
-        if perdao.updatePersona(persona_id, descripcion.upper()):
+        if perdao.updatePersona(persona_id, descripcion):
             return jsonify({
                 'success': True,
                 'data': {'id': persona_id, 'descripcion': descripcion},
@@ -120,16 +120,16 @@ def updatePersona(persona_id):
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@perapi.route('/personas/<int:persona_id>', methods=['DELETE'])
+@perapi.route('/persona/<int:persona_id>', methods=['DELETE'])
 def deletePersona(persona_id):
     perdao = PersonaDao()
 
     try:
-        # Usar el retorno de eliminarPersona para determinar el éxito
+        # Usar el retorno de eliminarCiudad para determinar el éxito
         if perdao.deletePersona(persona_id):
             return jsonify({
                 'success': True,
-                'mensaje': f'Persona con ID {persona_id} eliminada correctamente.',
+                'mensaje': f'persona con ID {persona_id} eliminada correctamente.',
                 'error': None
             }), 200
         else:
