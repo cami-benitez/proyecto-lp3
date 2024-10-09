@@ -15,6 +15,7 @@ from app.rutas.referenciales.estadocivil.estadocivil_route import estmod
 from app.rutas.referenciales.enfermedad.enfermedad_route import enfmod
 from app.rutas.referenciales.ocupacion.ocupacion_route import ocumod
 from app.rutas.referenciales.cita.cita_route import citmod
+from app.rutas.referenciales.medico.medico_route import medmod
 
 
 # registrar referenciales 
@@ -69,10 +70,15 @@ app.register_blueprint(ocumod, url_prefix=f'{modulo0}/ocupacion')
 
 from app.rutas.referenciales.ocupacion.ocupacion_api import ocuapi
 
-odulo0 = '/referenciales'
+modulo0 = '/referenciales'
 app.register_blueprint(citmod, url_prefix=f'{modulo0}/citas')
 
 from app.rutas.referenciales.cita.cita_api import citapi
+
+modulo0 = '/referenciales'
+app.register_blueprint(medmod, url_prefix=f'{modulo0}/Medico')
+
+from app.rutas.referenciales.medico.medico_api import medapi
 
 # APIS v1
 version1 = '/api/v1'
@@ -97,3 +103,5 @@ app.register_blueprint(enfapi, url_prefix=version1)
 app.register_blueprint(ocuapi, url_prefix=version1)
 
 app.register_blueprint(citapi, url_prefix=version1)
+
+app.register_blueprint(medapi, url_prefix=version1)

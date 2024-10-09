@@ -9,7 +9,7 @@ CREATE TABLE
 		id serial PRIMARY KEY,
 		descripcion varchar(60) UNIQUE,
 		apellido varchar(50),
-		numero_cedula TEXT NOT NULL 
+		cedula TEXT NOT NULL 
 	);
 CREATE TABLE 
     dia(

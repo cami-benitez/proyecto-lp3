@@ -84,7 +84,7 @@ Personas
       language: {
         url: "{{ url_for('static', filename='vendor/datatables/es-ES.json') }}",
       },
-      ajax:'/api/v1/persona', 
+      ajax:'/api/v1/personas', 
       columns: [
         { data: 'descripcion' },
         { data: 'apellido' },
@@ -105,6 +105,8 @@ Personas
       // inicia ventana modal
       $('#txtIdPersona').val("");
       $('#txtDescripcion').val("");
+      $('#txtApellido').val("");
+      $('#txtCedula').val("");
       $('#modalFormulario').modal();
     });
   }
@@ -139,7 +141,7 @@ Personas
         });
       } else {
         // insert
-        fetch(`/api/v1/persona`, {
+        fetch(`/api/v1/personas`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -159,6 +161,8 @@ Personas
         });
       }
       $('#txtDescripcion').val("");
+      $('#txtApellido').val("");
+      $('#txtCedula').val("");
       $('#modalFormulario').modal("hide");
     });
   }
@@ -177,7 +181,7 @@ Personas
           $('#modalTitle').text("Editar una Persona");
 
           const idPersona = $(this).data('id,descripcion,apellido,cedula');
-          $('#txtIdPersona').val(idPersona);
+          $('#txtIdPersonas').val(idPersona);
           // Necesitamos obtener la descripción del backend
           fetch(`/api/v1/persona/${idPersona}`, {
             method: 'GET',
@@ -187,7 +191,7 @@ Personas
           })
           .then(resp => resp.json())
           .then(data => {
-         $('#txtNombre').val("");(data.data.descripcion);
+         $('#txtDescripcion').val("");(data.data.descripcion);
             $('#modalFormulario').modal();
           });
         }
@@ -206,7 +210,7 @@ Personas
         cancelButtonText: `No`
       }).then((result) => {
         if (result.isConfirmed) {
-          fetch(`/api/v1/persona/${idPersona}`, {
+          fetch(`/api/v1/personas/${idPersona}`, {
             method: 'DELETE',
             headers: {
               'Content-Type': 'application/json'

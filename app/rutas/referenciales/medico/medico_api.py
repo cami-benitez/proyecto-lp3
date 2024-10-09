@@ -1,63 +1,62 @@
 from flask import Blueprint, request, jsonify, current_app as app
-from app.dao.referenciales.persona.PersonaDao import PersonaDao
+from app.dao.referenciales.Medico.MedicoDao import MedicoDao
+medapi = Blueprint('medapi', __name__)
 
-perapi = Blueprint('perapi', __name__)
-
-# Trae todas las personas
-@perapi.route('/personas', methods=['GET'])
-def getPersonas():
-    perdao = PersonaDao()
+# Trae todas las ciudades
+@medapi.route('/medico', methods=['GET'])
+def getMedico():
+    meddao =MedicoDao()
 
     try:
-        personas = perdao.getPersona()
+        medico = meddao.getMedico()
 
         return jsonify({
             'success': True,
-            'data': personas,
+            'data': medico,
             'error': None
         }), 200
 
     except Exception as e:
-        app.logger.error(f"Error al obtener todas las personas: {str(e)}")
+        app.logger.error(f"Error al obtener medico: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@perapi.route('/persona/<int:persona_id>', methods=['GET'])
-def getPersona(persona_id):
-    perdao = PersonaDao()
+@medapi.route('/medico/<int:medico_id>', methods=['GET'])
+def getMedicos(medico_id):
+    meddao = MedicoDao()
 
     try:
-        persona = perdao.getPersonaById(persona_id)
+        medico = meddao.getMedicoById(medico_id)
 
-        if persona:
+        if medico:
             return jsonify({
                 'success': True,
-                'data': persona,
+                'data': medico,
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró la persona con el ID proporcionado.'
+                'error': 'No se encontró medico con el ID proporcionado.'
             }), 404
 
     except Exception as e:
-        app.logger.error(f"Error al obtener persona: {str(e)}")
+        app.logger.error(f"Error al obtener medico: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-# Agrega una nueva persona
-@perapi.route('/personas', methods=['POST'])
-def addPersona():
+# Agrega una nueva ciudad
+@medapi.route('/medico', methods=['POST'])
+def addMedico():
     data = request.get_json()
-    perdao = PersonaDao()
+    meddao = MedicoDao()
 
     # Validar que el JSON no esté vacío y tenga las propiedades necesarias
-    campos_requeridos = ['descripcion', 'apellido', 'cedula']
+    campos_requeridos = ['descripcion']
 
     # Verificar si faltan campos o son vacíos
     for campo in campos_requeridos:
@@ -69,26 +68,26 @@ def addPersona():
 
     try:
         descripcion = data['descripcion'].upper()
-        persona_id = perdao.guardarPersona(descripcion)
-        if persona_id is not None:
+        medico_id = meddao.guardarMedico(descripcion)
+        if medico_id is not None:
             return jsonify({
                 'success': True,
-                'data': {'id': persona_id, 'descripcion': descripcion},
+                'data': {'id': medico_id, 'descripcion': descripcion},
                 'error': None
             }), 201
         else:
-            return jsonify({ 'success': False, 'error': 'No se pudo guardar la persona. Consulte con el administrador.' }), 500
+            return jsonify({ 'success': False, 'error': 'No se pudo guardar medico. Consulte con el administrador.' }), 500
     except Exception as e:
-        app.logger.error(f"Error al agregar persona: {str(e)}")
+        app.logger.error(f"Error al agregar medico: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@perapi.route('/personas/<int:persona_id>', methods=['PUT'])
-def updatePersona(persona_id):
+@medapi.route('/medico/<int:medico_id>', methods=['PUT'])
+def updateMedico(medico_id):
     data = request.get_json()
-    perdao = PersonaDao()
+    meddao = MedicoDao()
 
     # Validar que el JSON no esté vacío y tenga las propiedades necesarias
     campos_requeridos = ['descripcion']
@@ -102,44 +101,44 @@ def updatePersona(persona_id):
                             }), 400
     descripcion = data['descripcion']
     try:
-        if perdao.updatePersona(persona_id, descripcion.upper()):
+        if meddao.updateMedico(medico_id, descripcion):
             return jsonify({
                 'success': True,
-                'data': {'id': persona_id, 'descripcion': descripcion},
+                'data': {'id': medico_id, 'descripcion': descripcion},
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró la persona con el ID proporcionado o no se pudo actualizar.'
+                'error': 'No se encontró medico con el ID proporcionado o no se pudo actualizar.'
             }), 404
     except Exception as e:
-        app.logger.error(f"Error al actualizar persona: {str(e)}")
+        app.logger.error(f"Error al actualizar medico: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
         }), 500
 
-@perapi.route('/personas/<int:persona_id>', methods=['DELETE'])
-def deletePersona(persona_id):
-    perdao = PersonaDao()
+@medapi.route('/medico/<int:medico_id>', methods=['DELETE'])
+def deleteMedico(medico_id):
+    meddao = MedicoDao()
 
     try:
-        # Usar el retorno de eliminarPersona para determinar el éxito
-        if perdao.deletePersona(persona_id):
+        # Usar el retorno de eliminarCiudad para determinar el éxito
+        if meddao.deleteMedico(medico_id):
             return jsonify({
                 'success': True,
-                'mensaje': f'Persona con ID {persona_id} eliminada correctamente.',
+                'mensaje': f'Medico con ID {medico_id} eliminada correctamente.',
                 'error': None
             }), 200
         else:
             return jsonify({
                 'success': False,
-                'error': 'No se encontró la persona con el ID proporcionado o no se pudo eliminar.'
+                'error': 'No se encontró medico con el ID proporcionado o no se pudo eliminar.'
             }), 404
 
     except Exception as e:
-        app.logger.error(f"Error al eliminar persona: {str(e)}")
+        app.logger.error(f"Error al eliminar medico: {str(e)}")
         return jsonify({
             'success': False,
             'error': 'Ocurrió un error interno. Consulte con el administrador.'
