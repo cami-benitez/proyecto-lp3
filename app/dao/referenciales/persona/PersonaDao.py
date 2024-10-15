@@ -56,7 +56,7 @@ class PersonaDao:
     def guardarPersona(self, descripcion):
 
         insertPersonaSQL = """
-        INSERT INTO  persona(descripcion) VALUES(%s) RETURNING id
+        INSERT INTO persona(descripcion) VALUES(%s) RETURNING id
         """
 
         conexion = Conexion()
