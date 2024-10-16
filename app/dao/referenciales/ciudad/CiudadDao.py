@@ -14,7 +14,7 @@ class CiudadDao:
         con = conexion.getConexion()
         cur = con.cursor()
         try:
-            cur.execute(ciudadSQL)
+            cur.execute(ciudadSQL) 
             ciudades = cur.fetchall() # trae datos de la bd
             
             # Transformar los datos en una lista de diccionarios
