@@ -9,9 +9,12 @@ class PedidoDeComprasDao:
         query_pedidos = """
         SELECT
             pdc.id_pedido_compra
-            , pdc.id_empleado, p.nombres, p.apellidos,
+            , pdc.id_empleado
+            , p.nombres
+            , p.apellidos
             , pdc.id_sucursal
-            , pdc.id_epc, edpc.descripcion,
+            , pdc.id_epc 
+            , edpc.descripcion
             , pdc.fecha_pedido
             , pdc.id_deposito
         FROM
@@ -31,13 +34,13 @@ class PedidoDeComprasDao:
             pedidos = cur.fetchall()
             return [{
                 'id_pedido_compra' : pedido[0]
-                ,'id_empleado': pedido[1]
-                ,'empleado':f'{pedido[2]} {pedido[3]}'
-                ,'id_sucursal': pedido[4]
-                ,'id_epc': pedido[5]
-                ,'estado': pedido[6]
-                ,'fecha_pedido': pedido[7]
-                ,'id_dposito': pedido[8]
+                , 'id_empleado': pedido[1]
+                , 'empleado':f'{pedido[2]} {pedido[3]}'
+                , 'id_sucursal': pedido[4]
+                , 'id_epc': pedido[5]
+                , 'estado': pedido[6]
+                , 'fecha_pedido': pedido[7]
+                , 'id_dposito': pedido[8]
             } for pedido in pedidos]
         except Exception as e:
             app.logger.error(f"Error al obtener los pedido: {str(e)}")
