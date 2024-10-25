@@ -118,6 +118,8 @@ Formulario Pedido de Compras
 {% block js %}
 
 <script>
+  
+  const productos = {{ productos|tojson }};
    // Crea los nodos en el combo deposito
    function actualizarDepositos(depositos) {
     let options = "<option value=''>Depósitos</option>";
@@ -153,6 +155,8 @@ Formulario Pedido de Compras
           console.error('Fetch error:', err);
         })
       }
+    });
+    $('#btn_agregar_producto').on('click', function() {
     });
   }  
   $(function() {
