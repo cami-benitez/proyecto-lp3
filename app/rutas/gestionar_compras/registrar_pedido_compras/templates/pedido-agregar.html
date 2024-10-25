@@ -119,10 +119,22 @@ Formulario Pedido de Compras
 {% block js %}
 
 <script>
-  function addEvents(){
+  function addEvents() {
+    $('#cbo_sucursal').on('change', function() {
+      console.log($(this).val())
+    });
   }
   $(function() {
-fetch('')
-  })
+    addEvents();
+    // PROMESA
+    fetch('/api/v1/sucursal-depositos/1', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(resp => resp.json())
+    .then(data => console.log(data));
+  });
 </script>
 {% endblock %}
