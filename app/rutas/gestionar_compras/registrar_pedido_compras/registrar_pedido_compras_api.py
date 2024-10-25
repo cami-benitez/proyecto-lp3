@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, current_app as app
+from flask import Blueprint, jsonify, current_app as app
 from app.dao.gestionar_compras.registrar_pedido_compras.pedido_de_compras_dao import PedidoDeComprasDao
 
 pdcapi = Blueprint('pdcapi', __name__)

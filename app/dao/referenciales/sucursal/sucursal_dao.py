@@ -1,6 +1,6 @@
 # Data access object - DAO
 from flask import current_app as app
-from app.conexion.Conexion import Conexion
+from app.conexion.conexion import Conexion
 
 class SucursalDao:
 
@@ -29,30 +29,30 @@ class SucursalDao:
             cur.close()
             con.close()
 
-    def getCiudadById(self, id):
-
-        ciudadSQL = """
-        SELECT id, descripcion
-        FROM ciudades WHERE id=%s
+    def get_sucursal_depositos(self, id_sucursal: int):
+        sucursal_sql = """
+        SELECT
+            sd.id_deposito
+            , d.descripcion nombre_deposito
+        FROM
+            sucursal_depositos sd
+        LEFT JOIN depositos d
+            ON sd.id_deposito = d.id_deposito
+        WHERE
+            sd.id_sucursal = %s AND sd.estado = true
         """
         # objeto conexion
         conexion = Conexion()
         con = conexion.getConexion()
         cur = con.cursor()
         try:
-            cur.execute(ciudadSQL, (id,))
-            ciudadEncontrada = cur.fetchone() # Obtener una sola fila
-            if ciudadEncontrada:
-                return {
-                        "id": ciudadEncontrada[0],
-                        "descripcion": ciudadEncontrada[1]
-                    }  # Retornar los datos de la ciudad
-            else:
-                return None # Retornar None si no se encuentra la ciudad
+            cur.execute(sucursal_sql, (id_sucursal,))
+            sucursales = cur.fetchall() # trae datos de la bd
+            # Transformar los datos en una lista de diccionarios
+            return [{'id_deposito': sucursal[0], 'nombre_deposito': sucursal[1]} for sucursal in sucursales]
         except Exception as e:
-            app.logger.error(f"Error al obtener ciudad: {str(e)}")
-            return None
-
+            app.logger.error(f"Error al obtener las sucursales con depositos: {str(e)}")
+            return []
         finally:
             cur.close()
             con.close()
