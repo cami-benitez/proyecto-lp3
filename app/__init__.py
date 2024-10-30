@@ -6,7 +6,7 @@ app = Flask(__name__)
 #impotar referenciales 
 from app.rutas.referenciales.ciudad.ciudad_route import ciumod 
 from app.rutas.referenciales.pais.pais_route import paimod
-from app.rutas.referenciales.persona.persona_route import permod
+from app.rutas.referenciales.persona.persona_route import persona_mod
 from app.rutas.referenciales.dia.dia_route import diamod
 from app.rutas.referenciales.turno.turno_route import turmod
 from app.rutas.referenciales.sexo.sexo_route import sexmod
@@ -35,9 +35,9 @@ app.register_blueprint(paimod, url_prefix=f'{modulo0}/pais')
 from app.rutas.referenciales.pais.pais_api import paiapi
 
 modulo0 = '/referenciales'
-app.register_blueprint(permod, url_prefix=f'{modulo0}/persona')
+app.register_blueprint(persona_mod, url_prefix=f'{modulo0}/persona')
 
-from app.rutas.referenciales.persona.persona_api import perapi
+from app.rutas.referenciales.persona.persona_api import personaapi
 
 modulo0 = '/referenciales'
 app.register_blueprint(diamod, url_prefix=f'{modulo0}/dia')
@@ -105,7 +105,7 @@ app.register_blueprint(ciuapi, url_prefix=version1)
 
 app.register_blueprint(paiapi, url_prefix=version1)
 
-app.register_blueprint(perapi, url_prefix=version1)
+app.register_blueprint(personaapi, url_prefix=version1)
 
 app.register_blueprint(diaapi, url_prefix=version1)
 
