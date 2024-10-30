@@ -13,10 +13,21 @@ CREATE TABLE sucursales(
 
 CREATE TABLE depositos(
     id_deposito SERIAL PRIMARY KEY,
-    descripcion VARCHAR(60) UNIQUE NOT NULL,
-	id_sucursal INTEGER NOT NULL,
+    descripcion VARCHAR(60) UNIQUE NOT NULL
+	/*id_sucursal INTEGER NOT NULL,
 	FOREIGN KEY(id_sucursal) REFERENCES
 	sucursales(id_sucursal)
+	ON DELETE RESTRICT ON UPDATE CASCADE*/
+);
+
+CREATE TABLE sucursal_depositos(
+	id_sucursal INTEGER NOT NULL,
+	id_deposito INTEGER NOT NULL,
+	estado BOOLEAN NOT NULL,
+	PRIMARY KEY(id_sucursal, id_deposito),
+	FOREIGN KEY(id_sucursal) REFERENCES sucursales(id_sucursal)
+	ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY(id_deposito) REFERENCES depositos(id_deposito)
 	ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
@@ -39,13 +50,7 @@ CREATE TABLE personas(
     creacion_usuario INTEGER NOT NULL,
     modificacion_fecha DATE,
     modificacion_hora TIME,
-    modificacion_usuario INTEGER--,
-    /*FOREIGN KEY(creacion_usuario) REFERENCES
-    usuarios(id_usuario)
-    ON DELETE RESTRICT ON UPDATE CASCADE
-    FOREIGN KEY(modificacion_usuario) REFERENCES
-    usuarios(id_usuario)
-    ON DELETE RESTRICT ON UPDATE CASCADE*/
+    modificacion_usuario INTEGER
 );
 
 CREATE TABLE empleados(
@@ -83,3 +88,5 @@ CREATE TABLE pedido_de_compra_detalle(
     , FOREIGN KEY(id_pedido_compra) REFERENCES pedido_de_compra(id_pedido_compra)
     , FOREIGN KEY(id_producto) REFERENCES productos(id_producto)
 );
+
+ALTER TABLE productos ALTER COLUMN precio_unitario TYPE DECIMAL(10,2);

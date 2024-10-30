@@ -33,7 +33,7 @@ Formulario Pedido de Compras
                   <div class="form-group">
                     <label for="cbo_sucursal">Sucursales:</label>
                     <select id="cbo_sucursal" class="custom-select">
-                      <option>value=""</option>
+                      <option value="">Sucursales</option>
                       {% for item in sucursales %}
                         <option value="{{ item['id'] }}">
                           {{ item['descripcion'] }}
@@ -118,7 +118,7 @@ Formulario Pedido de Compras
 {% block js %}
 
 <script>
-  
+
   const productos = {{ productos|tojson }};
    // Crea los nodos en el combo deposito
    function actualizarDepositos(depositos) {
