@@ -23,6 +23,7 @@ CREATE TABLE depositos(
 CREATE TABLE sucursal_depositos(
 	id_sucursal INTEGER NOT NULL,
 	id_deposito INTEGER NOT NULL,
+    observaciones VARCHAR(60),
 	estado BOOLEAN NOT NULL,
 	PRIMARY KEY(id_sucursal, id_deposito),
 	FOREIGN KEY(id_sucursal) REFERENCES sucursales(id_sucursal)
