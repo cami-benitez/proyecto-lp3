@@ -100,9 +100,75 @@ class PedidoDeComprasDao:
         return True
 
     # modificar
-    def modificar(self):
-        pass
+    def modificar(self, pedido_dto: PedidoDeComprasDto):
+        updatePedidoCompraCabecera = """
+        UPDATE pedido_de_compra
+        (id_empleado, id_sucursal, id_epc, fecha_pedido, id_deposito)
+        VALUES(%s, %s, %s, %s, %s)
+        RETURNING id_pedido_compra
+        """
+        updateDetalleCompra = """
+        UPDATE pedido_de_compra_detalle
+        (id_pedido_compra, id_producto, cantidad)
+        VALUES(%s, %s, %s)
+        """
+        # objeto conexion
+        conexion = Conexion()
+        con = conexion.getConexion()
+        con.autocommit = False
+        cur = con.cursor()
+        try:
+            ## Insertando la cabecera
+            # (id_empleado, id_sucursal, id_epc, fecha_pedido, id_deposito)
+            parametros = (pedido_dto.id_empleado, pedido_dto.id_sucursal, \
+                pedido_dto.estado.id, pedido_dto.fecha_pedido, pedido_dto.id_deposito,)
+            cur.execute( updatePedidoCompraCabecera, parametros)
+            id_pedido_compra = cur.fetchone()[0]
 
+            ## Insertando el detalle del pedido
+            if len(pedido_dto.detalle_pedido) > 0:
+                for pedido in pedido_dto.detalle_pedido:
+                    # (id_pedido_compra, id_producto, cantidad)
+                    parametrosdetalle = (id_pedido_compra, pedido.id_producto, pedido.cantidad,)
+                    cur.execute(updateDetalleCompra, parametrosdetalle)
+
+            # Confirma la transacción
+            con.commit()
+        except Exception as e:
+            app.logger.error(f"Error a agregar un nuevo pedido: {str(e)}")
+            con.rollback()
+            return False
+        finally:
+            con.autocommit = True
+            cur.close()
+            con.close()
+        return True
     # anular
-    def anular(self):
-        pass
+    def anular(self, id_pedido_compra ):
+        updatePedidoCompraCabeceraSQL = """
+        DELETE FROM pedido_de_compra
+        (id_empleado, id_sucursal, id_epc, fecha_pedido, id_deposito)
+        VALUES(%s, %s, %s, %s, %s)
+        RETURNING id_pedido_compra
+        """
+
+        conexion = Conexion()
+        con = conexion.getConexion()
+        cur = con.cursor()
+
+        # Ejecucion exitosa
+        try:
+            cur.execute(updatePedidoCompraCabeceraSQL, (id_pedido_compra))
+            rows_affected = cur.rowcount
+            con.commit()
+
+            return rows_affected > 0  # Retornar True si se eliminó al menos una fila 
+
+        except Exception as e:
+            app.logger.error(f"Error al eliminar producto: {str(e)}")
+            con.rollback()
+            return False
+
+        finally:
+            cur.close()
+            con.close()
