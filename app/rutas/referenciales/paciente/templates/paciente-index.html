@@ -1,0 +1,312 @@
+
+{% extends 'base.html' %}
+
+{% block titulo %}
+Pacientes
+{% endblock %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <h3>Listar Pacientes</h3>
+
+    <!-- tarjeta -->
+    <div class="card">
+      <div class="card-header">
+        <button type="button" class="btn btn-primary" id="btnAgregar">Agregar</button>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped" id="tbl">
+          <thead>
+            <tr>
+              <th>Nombre:</th>
+              <th>Apellido:</th>
+              <th>Ci:</th>
+              <th>Edad:</th>
+              <th>Peso:</th>
+              <th>Altura:</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- /tarjeta -->
+
+    <!-- El formulario -->
+    <div class="modal" id="modalFormulario">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title" id="modalTitle"></h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            <div class="form-group">
+              <input type="hidden" id="txtIdPaciente">
+              <input type="hidden" id="idpe">
+              <label for="txtPersona">Persona:</label>
+              <input type="text" class="form-control" placeholder="clik para buscar persona" id="txtPersona" readonly>
+              <label for="txtEdad">Edad:</label>
+              <input type="number" class="form-control" placeholder="Ingrese la edad" id="txtEdad">
+              <label for="txtPeso">Peso (kg):</label>
+              <input type="number" step="0.1" class="form-control" placeholder="Ingrese el peso en kg" id="txtPeso">
+              <label for="txtAltura">Altura (cm):</label>
+              <input type="number" step="0.1" class="form-control" placeholder="Ingrese la altura en cm" id="txtAltura">
+            </div>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="btnGuardar">Guardar</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="modalBuscarPersona">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="modalPersonaTitle">Seleccionar Persona</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped" id="tblPersona">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>CI</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row mt-4 d-none" id="rowAlerta">
+      <div class="col col-md-12">
+        <div class="alert alert-success">
+          <strong>Registro Exitoso!</strong>
+          <div class="row" id="mostrarAlerta"></div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  const initDatatable = () => {
+    $('#tbl').DataTable({
+      language: {
+        url: "{{ url_for('static', filename='vendor/datatables/es-ES.json') }}",
+      },
+      ajax:'/api/v1/pacientes',
+      columns: [
+        { data: 'nombre' },
+        { data: 'apellido' },
+        { data: 'cedula' },
+        { data: 'edad' },
+        { data: 'peso' },
+        { data: 'altura' },
+        { data: function(row) {
+            return `<button type="button" name="btn_editar" class="btn btn-primary" data-id="${row.id}">Editar</button>
+                    <button type="button" name="btn_eliminar" class="btn btn-danger" data-id="${row.id}">Eliminar</button>`;
+          }
+        }
+      ]
+    });
+  }
+
+  const initDatatablep= () => {
+    $('#tblPersona').DataTable({
+      language: {
+        url: "{{ url_for('static', filename='vendor/datatables/es-ES.json') }}",
+      },
+      ajax:'/api/v1/personas',
+      columns: [
+        { data: 'nombre' },
+        { data: 'apellido' },
+        { data: 'cedula' },
+        { data: function(row) {
+            return `<button type="button" name="btn_seleccionar_persona" class="fa fa-chek" data-id="${row.id}" data-nombre="${row.nombre}">Selecionar</button>`;
+          }
+        }
+      ]
+    });
+    $('#tblPersona').on('click', 'button[name="btn_seleccionar_persona"]', function () {
+      const idPersona = $(this).data('id');
+      const persona = $(this).data('nombre');
+      $('#txtPersona').val(persona);
+      $('#idpe').val(idPersona);
+      $('#modalBuscarPersona').modal('hide');
+    });
+  }
+
+  const buscarPersona = () => {
+    $('#txtPersona').on('click', function () {
+      $('#modalPersonaTitle').text("Seleccionar Persona");
+      $('#modalBuscarPersona').modal();
+    });
+  }
+
+  const agregar = () => {
+    $('#btnAgregar').on('click', function(){
+      $('#modalTitle').text("Agregar Paciente");
+      $('#txtIdPaciente').val("");
+      $('#idpe').val("");
+      $('#txtEdad').val("");
+      $('#txtPeso').val("");
+      $('#txtAltura').val("");
+      $('#modalFormulario').modal();
+    });
+  }
+
+  const guardar = () => {
+    $('#btnGuardar').on('click', function() {
+      const idPaciente = $('#txtIdPaciente').val();
+      const idpe = $('#idpe').val();
+      const nuevaEdad = $('#txtEdad').val();
+      const nuevoPeso = $('#txtPeso').val();
+      const nuevaAltura = $('#txtAltura').val();
+      const tabla = $('#tbl').DataTable();
+
+      if(idPaciente) {
+        // update
+        fetch(`/api/v1/pacientes/${idPaciente}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          }, body: JSON.stringify({ idpe: idpe, edad: nuevaEdad, peso: nuevoPeso, altura: nuevaAltura })
+        })
+        .then(resp => resp.json())
+        .then(data => {
+          if(data && !data.error && data.success) {
+            tabla.ajax.reload();
+            Swal.fire("Actualizado", "El paciente ha sido actualizado correctamente.", "success");
+          } else {
+            Swal.fire(data.error);
+          }
+        }).catch(err => {
+          console.error(err);
+          Swal.fire("Error", "Ocurrió un error al actualizar el paciente.", "error");
+        });
+      } else {
+        // insert
+        fetch(`/api/v1/pacientes`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }, body: JSON.stringify({ idpe: idpe, edad: nuevaEdad, peso: nuevoPeso, altura: nuevaAltura })
+        })
+        .then(resp => resp.json())
+        .then(data => {
+          if(data && !data.error && data.success) {
+            tabla.ajax.reload();
+            Swal.fire("Agregado", "El paciente ha sido agregado correctamente.", "success");
+          } else {
+            Swal.fire(data.error);
+          }
+        }).catch(err => {
+          console.error(err);
+          Swal.fire("Error", "Ocurrió un error al guardar el paciente.", "error");
+        });
+      }
+      $('#modalFormulario').modal("hide");
+    });
+  }
+
+  const editar = () => {
+    $('#tbl').on('click', 'button[name="btn_editar"]',function(){
+      Swal.fire({
+        title: "¿Deseas editar este registro?",
+        showCancelButton: true,
+        confirmButtonText: "Si",
+        cancelButtonText: `No`
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $('#modalTitle').text("Editar Paciente");
+
+          const idPaciente = $(this).data('id');
+          $('#txtIdPaciente').val(idPaciente);
+
+          // Obtener los datos del paciente del backend
+          fetch(`/api/v1/pacientes/${idPaciente}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(resp => resp.json())
+          .then(data => {
+            $('#txtNombre').val(data.data.nombre);
+            $('#txtEdad').val(data.data.edad);
+            $('#txtPeso').val(data.data.peso);
+            $('#txtAltura').val(data.data.altura);
+            $('#modalFormulario').modal();
+          });
+        }
+      });
+    });
+  }
+
+  const eliminar = () => {
+    $('#tbl').on('click', 'button[name="btn_eliminar"]',function(){
+      const idPaciente = $(this).data('id');
+      Swal.fire({
+        title: "¿Deseas eliminar este registro?",
+        showCancelButton: true,
+        confirmButtonText: "Si",
+        cancelButtonText: `No`
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/api/v1/pacientes/${idPaciente}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(resp => resp.json())
+          .then(data => {
+            if(data && !data.error && data.success) {
+              const fila =$(this).closest('tr');
+              const tabla = $('#tbl').DataTable();
+              tabla.row(fila).remove().draw();
+              Swal.fire("Eliminado", "El paciente ha sido eliminado correctamente.", "success");
+            } else {
+              Swal.fire(data.error);
+            }
+          }).catch(err => {
+            Swal.fire("Error", "Ocurrió un error al eliminar el paciente.", "error");
+          });
+        }
+      });
+    });
+  }
+
+  const addEvents = () => {
+    agregar();
+    guardar();
+    editar();
+    eliminar();
+    buscarPersona();
+  }
+
+  $(function() {
+    initDatatable();
+    initDatatablep();
+    addEvents();
+  }); 
+</script> 
+{% endblock %}

@@ -7,7 +7,7 @@ CREATE TABLE
 CREATE TABLE
 	personas(
 		id serial PRIMARY KEY,
-		descripcion varchar(60) UNIQUE,
+		nombre varchar(60) UNIQUE,
 		apellido varchar(50),
 		cedula TEXT NOT NULL 
 	);
@@ -86,4 +86,11 @@ CREATE TABLE
 		dia varchar(60), 
         turnos varchar(60)
 	);  
+CREATE TABLE pacientes(
+        id serial PRIMARY KEY,
+        nombre varchar(60)NOT NULL,
+        edad INT NOT NULL CHECK (edad >= 0),
+        peso DECIMAL(5, 2) NOT NULL CHECK (peso >= 0),
+        altura DECIMAL(5, 2) NOT NULL CHECK (altura >= 0)
+    );
     

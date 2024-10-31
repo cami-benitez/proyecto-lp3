@@ -7,6 +7,7 @@ app = Flask(__name__)
 from app.rutas.referenciales.ciudad.ciudad_route import ciumod 
 from app.rutas.referenciales.pais.pais_route import paimod
 from app.rutas.referenciales.persona.persona_route import persona_mod
+from app.rutas.referenciales.paciente.paciente_route import pacientemod
 from app.rutas.referenciales.dia.dia_route import diamod
 from app.rutas.referenciales.turno.turno_route import turmod
 from app.rutas.referenciales.sexo.sexo_route import sexmod
@@ -38,6 +39,11 @@ modulo0 = '/referenciales'
 app.register_blueprint(persona_mod, url_prefix=f'{modulo0}/persona')
 
 from app.rutas.referenciales.persona.persona_api import personaapi
+
+modulo0 = '/referenciales'
+app.register_blueprint(pacientemod, url_prefix=f'{modulo0}/paciente')
+
+from app.rutas.referenciales.paciente.paciente_api import pacienteapi
 
 modulo0 = '/referenciales'
 app.register_blueprint(diamod, url_prefix=f'{modulo0}/dia')
@@ -106,6 +112,8 @@ app.register_blueprint(ciuapi, url_prefix=version1)
 app.register_blueprint(paiapi, url_prefix=version1)
 
 app.register_blueprint(personaapi, url_prefix=version1)
+
+app.register_blueprint(pacienteapi, url_prefix=version1)
 
 app.register_blueprint(diaapi, url_prefix=version1)
 
