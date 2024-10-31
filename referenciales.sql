@@ -1,7 +1,7 @@
 CREATE TABLE 
     pais(
         id serial PRIMARY KEY 
-        , descripcion varchar(60) UNIQUE
+        descripcion varchar(60) UNIQUE CHECK (descripcion IN('paraguay', 'Brasil','uruguay'))
     );
 
 CREATE TABLE
@@ -78,10 +78,12 @@ CREATE TABLE
         , descripcion varchar(60) UNIQUE
     );
     
-    CREATE TABLE 
-    persona(
-        id serial PRIMARY KEY 
-        , descripcion varchar(60) UNIQUE
-    );
-    
+ CREATE TABLE
+	Medico(
+		id serial PRIMARY KEY,
+		nombre varchar(60) UNIQUE,
+		especialidad varchar(60),
+		dia varchar(60), 
+        turnos varchar(60)
+	);  
     
