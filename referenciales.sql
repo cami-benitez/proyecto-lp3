@@ -1,7 +1,7 @@
 CREATE TABLE 
     pais(
         id serial PRIMARY KEY 
-        descripcion varchar(60) UNIQUE CHECK (descripcion IN('paraguay', 'Brasil','uruguay'))
+        , descripcion varchar(60) UNIQUE
     );
 
 CREATE TABLE
