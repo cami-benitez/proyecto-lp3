@@ -15,7 +15,7 @@ from app.rutas.referenciales.estadocivil.estadocivil_route import estmod
 from app.rutas.referenciales.enfermedad.enfermedad_route import enfmod
 from app.rutas.referenciales.ocupacion.ocupacion_route import ocumod
 from app.rutas.referenciales.cita.cita_route import citmod
-from app.rutas.referenciales.medico.medico_route import medmod
+from app.rutas.referenciales.medico.medico_route import medico_mod
 from app.rutas.referenciales.pago.pago_route import pagmod
 from app.rutas.referenciales.horario.horario_route import hormod
 from app.rutas.referenciales.servicio.servicio_route import sermod
@@ -80,9 +80,9 @@ app.register_blueprint(citmod, url_prefix=f'{modulo0}/citas')
 from app.rutas.referenciales.cita.cita_api import citapi
 
 modulo0 = '/referenciales'
-app.register_blueprint(medmod, url_prefix=f'{modulo0}/Medico')
+app.register_blueprint(medico_mod, url_prefix=f'{modulo0}/Medico')
 
-from app.rutas.referenciales.medico.medico_api import medapi
+from app.rutas.referenciales.medico.medico_api import medico_api
 
 modulo0 = '/referenciales'
 app.register_blueprint(pagmod, url_prefix=f'{modulo0}/Pago')
@@ -123,7 +123,7 @@ app.register_blueprint(ocuapi, url_prefix=version1)
 
 app.register_blueprint(citapi, url_prefix=version1)
 
-app.register_blueprint(medapi, url_prefix=version1)
+app.register_blueprint(medico_api, url_prefix=version1)
 
 app.register_blueprint(pagapi, url_prefix=version1)
 

@@ -1,142 +1,49 @@
 from flask import current_app as app
 from app.conexion.conexion import Conexion
-
 class MedicoDao:
 
-    def getMedico(self):
-
-        medicoSQL = """
-        SELECT id, descripcion
-        FROM medico
-        """
-        # objeto conexion
+    def _execute_query(self, query, params=None, fetchone=False, commit=False):
         conexion = Conexion()
-        con = conexion.getConexion()
-        cur = con.cursor()
-        try:
-            cur.execute(medicoSQL)
-            medico = cur.fetchall() # trae datos de la bd
-            
-            # Transformar los datos en una lista de diccionarios
-            return [{'id': medico[0], 'descripcion': medico[1]} for medico in medico]
-        except Exception as e:
-            app.logger.error(f"Error al obtener medico: {str(e)}")
-            return []    
-        finally:
-            cur.close()
-            con.close()
+        with conexion.getConexion() as con:
+            with con.cursor() as cur:
+                try:
+                    cur.execute(query, params or ())
+                    if commit:
+                        con.commit()
+                        return cur.fetchone()[0] if fetchone else cur.rowcount
+                    return cur.fetchone() if fetchone else cur.fetchall()
+                except Exception as e:
+                    app.logger.error(f"Error executing query: {str(e)}")
+                    if commit:
+                        con.rollback()
+                    return None
 
-    def getMedicoById(self, id):
+    def getMedicos(self):
+        medicoSQL = "SELECT id, nombre, especialidad, dia, turnos FROM medico"
+        medicos = self._execute_query(medicoSQL)
+        return [{'id': medico[0], 'nombre': medico[1], 'especialidad': medico[2], 'dia': medico[3], 'turnos': medico[4]} for medico in medicos] if medicos else []
 
-        medicoSQL = """
-        SELECT id, descripcion
-        FROM medico WHERE id=%s
-        """
-        # objeto conexion
-        conexion = Conexion()
-        con = conexion.getConexion()
-        cur = con.cursor()
-        try:
-            cur.execute(medicoSQL, (id,))
-            medicoEncontrada = cur.fetchone() # Obtener una sola fila
-            if medicoEncontrada:
-                return {
-                        "id": medicoEncontrada[0],
-                        "descripcion": medicoEncontrada[1]
-                    }  # Retornar los datos de la ciudad
-            else:
-                return None # Retornar None si no se encuentra la ciudad
-        except Exception as e:
-            app.logger.error(f"Error al obtener medico: {str(e)}")
-            return None
-        finally:
-            cur.close()
-            con.close()
+    def getMedicoById(self, medico_id):
+        medicoSQL = "SELECT id, nombre, especialidad, dia, turnos FROM medico WHERE id=%s"
+        medicoEncontrado = self._execute_query(medicoSQL, (medico_id,), fetchone=True)
+        return {
+            "id": medicoEncontrado[0],
+            "nombre": medicoEncontrado[1],
+            "especialidad": medicoEncontrado[2],
+            "dia": medicoEncontrado[3],
+            "turnos": medicoEncontrado[4]
+        } if medicoEncontrado else None
 
-    def guardarMedico(self, descripcion):
+    def guardarMedico(self, nombre, especialidad, dia, turnos):
+        insertMedicoSQL = "INSERT INTO medico(nombre, especialidad, dia, turnos) VALUES(%s, %s, %s, %s) RETURNING id"
+        return self._execute_query(insertMedicoSQL, (nombre, especialidad, dia, turnos), fetchone=True, commit=True)
 
-        insertMedicoSQL = """
-        INSERT INTO medico(descripcion) VALUES(%s) RETURNING id
-        """
+    def updateMedico(self, medico_id, nombre, especialidad, dia, turnos):
+        updateMedicoSQL = "UPDATE medico SET nombre=%s, especialidad=%s, dia=%s, turnos=%s WHERE id=%s"
+        filas_afectadas = self._execute_query(updateMedicoSQL, (nombre, especialidad, dia, turnos, medico_id), commit=True)
+        return filas_afectadas > 0
 
-        conexion = Conexion()
-        con = conexion.getConexion()
-        cur = con.cursor()
-
-        # Ejecucion exitosa
-        try:
-            cur.execute(insertMedicoSQL, (descripcion,))
-            ciudad_id = cur.fetchone()[0]
-            con.commit() # se confirma la insercion
-            return ciudad_id
-
-        # Si algo fallo entra aqui
-        except Exception as e:
-            app.logger.error(f"Error al insertar medico: {str(e)}")
-            con.rollback() # retroceder si hubo error
-            return False
-
-
-        # Siempre se va ejecutar
-        finally:
-            cur.close()
-            con.close()
-
-
-    def updateMedico(self, id, descripcion):
-
-        updateMedicoSQL = """
-        UPDATE medico
-        SET descripcion=%s
-        WHERE id=%s
-        """
-
-        conexion = Conexion()
-        con = conexion.getConexion()
-        cur = con.cursor()
-
-        # Ejecucion exitosa
-        try:
-            cur.execute(updateMedicoSQL, (descripcion, id,))
-            filas_afectadas = cur.rowcount # Obtener el número de filas afectadas
-            con.commit()
-
-            return filas_afectadas > 0 # Retornar True si se actualizó al menos una fila   
-        except Exception as e:
-            app.logger.error(f"Error al actualizar medico: {str(e)}")
-            con.rollback()
-            return False
-       
-        # Siempre se va ejecutar
-        finally:
-            cur.close()
-            con.close()
-
-
-    def deleteMedico(self, id):
-
-        updateMedicoSQL = """
-        DELETE FROM medico
-        WHERE id=%s
-        """
-
-        conexion = Conexion()
-        con = conexion.getConexion()
-        cur = con.cursor()
-
-        # Ejecucion exitosa
-        try:
-            cur.execute(updateMedicoSQL, (id,))
-            rows_affected = cur.rowcount
-            con.commit()
-
-            return rows_affected > 0  # Retornar True si se eliminó al menos una fila 
-
-        except Exception as e:
-            app.logger.error(f"Error al eliminar medico: {str(e)}")
-            con.rollback()
-            return False
-
-        finally:
-            cur.close()
-            con.close()
+    def deleteMedico(self, medico_id):
+        deleteMedicoSQL = "DELETE FROM medico WHERE id=%s"
+        rows_affected = self._execute_query(deleteMedicoSQL, (medico_id,), commit=True)
+        return rows_affected > 0
