@@ -1,4 +1,3 @@
-
 from flask import current_app as app
 from app.conexion.conexion import Conexion
 
@@ -6,8 +5,10 @@ class PersonaDao:
 
     def getPersonas(self):
         personaSQL = """
-        SELECT id, nombre, apellido, cedula
-        FROM personas
+      SELECT
+        p.id_persona, p.nombre, p.apellido, p.cedula, g.descripcion, e.descripcion, p.telefono_emergencia, c.descripcion 
+            FROM personas p, generos g, estado_civiles e, ciudades c
+            where p.id_genero=g.id_genero and p.id_estado_civil=e.id_estado_civil and p.id_ciudad=c.id_ciudad
         """
         conexion = Conexion()
         con = conexion.getConexion()
@@ -17,7 +18,8 @@ class PersonaDao:
             personas = cur.fetchall()
 
             # Transformar los datos en una lista de diccionarios con los nuevos campos
-            return [{'id': persona[0], 'nombre': persona[1], 'apellido': persona[2], 'cedula': persona[3]} for persona in personas]
+            return [{
+                'id': persona[0], 'nombre': persona[1], 'apellido': persona[2], 'cedula': persona[3], 'genero': persona[4], 'estado_civil': persona[5], 'telefono_emergencia': persona[6],'ciudad': persona[7]} for persona in personas]
 
         except Exception as e:
             app.logger.error(f"Error al obtener todas las personas: {str(e)}")
@@ -26,24 +28,33 @@ class PersonaDao:
         finally:
             cur.close()
             con.close()
-
-    def getPersonaById(self, id):
+    # TRANSFORMAC CON CTGP PRIMERO MANDAR LA TABLA SQL 
+    def getPersonasById(self, id_persona):
         personaSQL = """
-        SELECT id, nombre, apellido, cedula
-        FROM personas WHERE id=%s
+         SELECT
+            p.id_persona, p.nombre, p.apellido, p.cedula, g.descripcion, e.descripcion, p.telefono_emergencia, c.descripcion, g.id_genero, e.id_estado_civil, c. id_ciudad 
+            FROM personas p, generos g, estado_civiles e, ciudades c
+            where p.id_genero=g.id_genero and p.id_estado_civil=e.id_estado_civil and p.id_ciudad=c.id_ciudad and p.id_persona=%s
         """
         conexion = Conexion()
         con = conexion.getConexion()
         cur = con.cursor()
         try:
-            cur.execute(personaSQL, (id,))
+            cur.execute(personaSQL, (id_persona,))
             personaEncontrada = cur.fetchone()
             if personaEncontrada:
                 return {
                     "id": personaEncontrada[0],
                     "nombre": personaEncontrada[1],
                     "apellido": personaEncontrada[2],
-                    "cedula": personaEncontrada[3]
+                    "cedula": personaEncontrada[3],
+                    "genero": personaEncontrada[4],
+                    "estado_civil": personaEncontrada[5],
+                    "telefono_emergencia": personaEncontrada[6],
+                    "ciudad": personaEncontrada[7],
+                    "id_genero": personaEncontrada[8],
+                    "id_estado_civil": personaEncontrada[9],
+                     "id_ciudad": personaEncontrada[10]
                 }
             else:
                 return None
@@ -55,16 +66,16 @@ class PersonaDao:
             cur.close()
             con.close()
 
-    def guardarPersona(self, nombre, apellido, cedula):
+    def guardarPersona(self, nombre, apellido, cedula, id_genero, id_estado_civil, telefono_emergencia, id_ciudad):
         insertPersonaSQL = """
-        INSERT INTO personas(nombre, apellido, cedula) VALUES(%s, %s, %s) RETURNING id
+        INSERT INTO personas(nombre, apellido, cedula, id_genero, id_estado_civil, telefono_emergencia, id_ciudad) VALUES(%s, %s, %s,%s, %s, %s, %s) RETURNING id_persona
         """
         conexion = Conexion()
         con = conexion.getConexion()
         cur = con.cursor()
 
         try:
-            cur.execute(insertPersonaSQL, (nombre, apellido, cedula))
+            cur.execute(insertPersonaSQL, (nombre, apellido, cedula, id_genero, id_estado_civil, telefono_emergencia, id_ciudad))
             persona_id = cur.fetchone()[0]
             con.commit()
             return persona_id
@@ -78,18 +89,18 @@ class PersonaDao:
             cur.close()
             con.close()
 
-    def updatePersona(self, id, nombre, apellido, cedula):
+    def updatePersona(self, id_persona, nombre, apellido, cedula, id_genero, id_estado_civil, telefono_emergencia, id_ciudad):
         updatePersonaSQL = """
         UPDATE personas
-        SET nombre=%s, apellido=%s, cedula=%s
-        WHERE id=%s
+        SET nombre=%s, apellido=%s, cedula=%s, id_genero=%s, id_estado_civil=%s, telefono_emergencia=%s, id_ciudad=%s
+        WHERE id_persona=%s
         """
         conexion = Conexion()
         con = conexion.getConexion()
         cur = con.cursor()
 
         try:
-            cur.execute(updatePersonaSQL, (nombre, apellido, cedula, id))
+            cur.execute(updatePersonaSQL, (nombre, apellido, cedula, id_genero, id_estado_civil, telefono_emergencia, id_ciudad,id_persona))
             filas_afectadas = cur.rowcount
             con.commit()
             return filas_afectadas > 0
@@ -103,17 +114,17 @@ class PersonaDao:
             cur.close()
             con.close()
 
-    def deletePersona(self, id):
+    def deletePersona(self, id_persona):
         deletePersonaSQL = """
         DELETE FROM personas
-        WHERE id=%s
+        WHERE id_persona=%s
         """
         conexion = Conexion()
         con = conexion.getConexion()
         cur = con.cursor()
 
         try:
-            cur.execute(deletePersonaSQL, (id,))
+            cur.execute(deletePersonaSQL, (id_persona,))
             rows_affected = cur.rowcount
             con.commit()
 
