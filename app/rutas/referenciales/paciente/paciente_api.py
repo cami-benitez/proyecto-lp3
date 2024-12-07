@@ -1,4 +1,3 @@
-
 from flask import Blueprint, request, jsonify, current_app as app
 from app.dao.referenciales.paciente.PacienteDao import PacienteDao
 
