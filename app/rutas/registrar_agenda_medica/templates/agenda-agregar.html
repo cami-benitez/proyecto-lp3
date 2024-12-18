@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+Formulario Agenda Médica
+{% endblock %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3>Formulario Agenda Médica</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col col-md-6">
+                  <!-- Combo médicos -->
+                  <div class="form-group">
+                    <label for="cbo_medico">Médico:</label>
+                    <select id="cbo_medico" class="custom-select">
+                      <option selected>Médico</option>
+                      {% for item in medicos %}
+                        <option value="{{ item['id_medico'] }}">
+                          {{ item['nombre_medico'] }} - Cédula: {{ item['ci'] }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <!--  -->
+
+                  <!-- Combo especialidades -->
+                  <div class="form-group">
+                    <label for="cbo_especialidad">Especialidad:</label>
+                    <select id="cbo_especialidad" class="custom-select">
+                      <option value="">Especialidad</option>
+                      {% for item in especialidades %}
+                        <option value="{{ item['id_especialidad'] }}">
+                          {{ item['descripcion'] }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <!--  -->
+                  <div class="form-group">
+                    <label for="txt_fecha">Fecha:</label>
+                    <input type="date" class="form-control" id="txt_fecha" />
+                  </div>
+                </div>
+
+                <!-- Combo turno -->
+                <div class="col col-md-6">
+                    <div class="form-group">
+                      <label for="cbo_turno">Turno:</label>
+                      <select id="cbo_turno" class="custom-select">
+                        <option value="">Turno</option>
+                      </select>
+                    </div>
+                </div>
+
+                <!-- Combo día -->
+                <div class="col col-md-6">
+                    <div class="form-group">
+                      <label for="cbo_dia">Día de atención:</label>
+                      <select id="cbo_dia" class="custom-select">
+                        <option value="">Día</option>
+                        <option value="Lunes">Lunes</option>
+                        <option value="Martes">Martes</option>
+                        <option value="Miércoles">Miércoles</option>
+                        <option value="Jueves">Jueves</option>
+                        <option value="Viernes">Viernes</option>
+                        <option value="Sábado">Sábado</option>
+                        <option value="Domingo">Domingo</option>
+                      </select>
+                    </div>
+                </div>
+
+                <!-- Combo sala de atención -->
+                <div class="col col-md-6">
+                    <div class="form-group">
+                      <label for="cbo_sala">Sala de Atención:</label>
+                      <select id="cbo_sala" class="custom-select">
+                        <option value="">Sala</option>
+                      </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr>
+            <div class="row">
+                <div class="col col-md-12">
+                    <table class="table table-hover" id="tbl_agenda">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Médico</th>
+                            <th>Especialidad</th>
+                            <th>Turno</th>
+                            <th>Día</th>
+                            <th>Sala</th>
+                            <th>Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-primary" id="btn_registrar_agenda">Registrar agenda</button>
+            <button type="button" class="btn btn-warning" id="btn_salir_operacion">Salir de la operación</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  // Variables y constantes globales
+  let acumular_agenda = [];
+
+  // Todo lo que provenga del Backend
+  const data_from_server = {
+    medicos: {{ medicos|tojson }},
+    especialidades: {{ especialidades|tojson }},
+    turnos: {{ turnos|tojson }},
+    salas: {{ salas|tojson }}
+  };
+
+  function creaTr(item) {
+    return `
+      <tr data-id="${item.id_agenda}">
+        <td>${item.id_agenda}</td>
+        <td>${item.medico}</td>
+        <td>${item.especialidad}</td>
+        <td>${item.turno}</td>
+        <td>${item.dia}</td>
+        <td>${item.sala}</td>
+        <td><button type="button" class="eliminar btn btn-warning btn-sm">Eliminar Item</button></td>
+      </tr>
+    `;
+  }
+
+  function obtieneDetalleAgenda() {
+    const agenda = [];
+    $('#tbl_agenda tbody tr').each(function(k, v) {
+      agenda.push({
+        id_medico: $(v).children().eq(0).text(),
+        id_especialidad: $(v).children().eq(1).text(),
+        id_turno: $(v).children().eq(2).text(),
+        id_dia: $(v).children().eq(3).text(),
+        id_sala: $(v).children().eq(4).text(),
+      });
+    });
+    return agenda;
+  }
+
+  function actualizarTurnos(turnos) {
+    let options = "<option value=''>Turno</option>";
+    for (const item of turnos) {
+      options += `<option value="${item.id_turno}">${item.turno}</option>`;
+    }
+    $('#cbo_turno').empty().append(options);
+  }
+
+  function actualizarSalas(salas) {
+    let options = "<option value=''>Sala de Atención</option>";
+    for (const item of salas) {
+      options += `<option value="${item.id_sala}">${item.sala}</option>`;
+    }
+    $('#cbo_sala').empty().append(options);
+  }
+
+  /**
+   *
+   * Define todos los eventos del formularios
+   *
+   */
+  function addEvents() {
+    $('#btn_registrar_agenda').on('click', function() {
+      // Previamente validado, se debe construir el payload
+      const payload = {
+        id_medico: Number($('#cbo_medico').val()),
+        id_especialidad: Number($('#cbo_especialidad').val()),
+        fecha: $('#txt_fecha').val(),
+        id_turno: Number($('#cbo_turno').val()),
+        id_dia: $('#cbo_dia').val(),
+        id_sala: Number($('#cbo_sala').val())
+      };
+      console.log(payload);
+      fetch(`/api/v1/agenda/registrar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(resp => resp.json())
+      .then(data => {
+        if (data && !data.error && data.success) {
+          Swal.fire("Bien", "Agenda Creada.", "success");
+        } else {
+          Swal.fire(data.error);
+        }
+      }).catch(err => {
+        console.error(err);
+        Swal.fire("Error", "Error al crear la agenda.", "error");
+      });
+    });
+
+    // Regresa al index de agenda
+    $('#btn_salir_operacion').on('click', function() {
+      location.replace("{{ url_for('agenda_mod.agenda_index') }}");
+    });
+  }
+  $(function() {
+    addEvents();
+  });
+</script>
+{% endblock %}

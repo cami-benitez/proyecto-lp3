@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+Listar Agenda Médica
+{% endblock %}
+
+{% block contenido %}
+<div class="container mt-4">
+    <h3>Listar Agenda Médica</h3>
+
+    <!-- tarjeta -->
+    <div class="card">
+      <div class="card-header">
+        <a href="{{ url_for('ammod.agenda_agregar') }}" target="_blank" class="btn btn-primary">Agregar</a>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped" id="tblAgenda">
+          <thead>
+            <tr>
+              <th>ID Médico</th>
+              <th>Médico</th>
+              <th>Especialidad</th>
+              <th>Sala de Atención</th>
+              <th>Turno</th>
+              <th>Día</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+      </table>
+      </div>
+    </div>
+    <!-- /tarjeta -->
+
+    <div class="row mt-4 d-none" id="rowAlerta">
+        <div class="col col-md-12">
+            <div class="alert alert-success">
+                <strong>Registro Exitoso!</strong>
+                <div class="row" id="mostrarAlerta"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+  const initDatatable = () => {
+    $('#tblAgenda').DataTable({
+      language: {
+        url: "{{ url_for('static', filename='vendor/datatables/es-ES.json') }}",
+      },
+      ajax:'/api/v1/gestionar-agenda/obtener-agenda',
+      columns: [
+        { data: 'id_medico' },
+        { data: 'medico' },
+        { data: 'especialidad' },
+        { data: 'sala_atencion' },
+        { data: 'turno' },
+        { data: 'dia' },
+        { data: function(row) {
+            return `<button type="button" name="btn_editar" class="btn btn-primary" data-id="${row.id_medico}">Modificar</button>
+                    <button type="button" name="btn_eliminar" class="btn btn-danger" data-id="${row.id_medico}">Eliminar</button>`
+          }
+        }
+      ]
+    });
+  }
+
+  const agregar = () => {
+    $('#btnAgregar').on('click', function(){
+      // Acción de agregar agenda médica
+    });
+  }
+
+  const guardar = () => {
+    $('#btnGuardar').on('click', function() {
+      const idAgenda = $('#txtIdAgenda').val();
+      const medico = $('#txtMedico').val();
+      const especialidad = $('#txtEspecialidad').val();
+      const salaAtencion = $('#txtSalaAtencion').val();
+      const turno = $('#txtTurno').val();
+      const dia = $('#txtDia').val();
+      const tabla = $('#tblAgenda').DataTable();
+
+      if(idAgenda) {
+        // Actualizar agenda médica
+        fetch(`/api/v1/agenda/${idAgenda}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          }, body: JSON.stringify({ medico, especialidad, sala_atencion: salaAtencion, turno, dia })
+        })
+        .then(resp => resp.json())
+        .then(data => {
+          if(data && !data.error && data.success) {
+            tabla.ajax.reload();
+            Swal.fire("Actualizado", "La agenda médica ha sido actualizada correctamente.", "success");
+          } else {
+            Swal.fire(data.error);
+          }
+        }).catch(err => {
+          console.error(err);
+          Swal.fire("Error", "Ocurrió un error al actualizar la agenda médica.", "error");
+        });
+      } else {
+        // Insertar nueva agenda médica
+        fetch(`/api/v1/agenda`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }, body: JSON.stringify({ medico, especialidad, sala_atencion: salaAtencion, turno, dia })
+        })
+        .then(resp => resp.json())
+        .then(data => {
+          if(data && !data.error && data.success) {
+            tabla.ajax.reload();
+            Swal.fire("Guardado", "La agenda médica ha sido agregada correctamente.", "success");
+          } else {
+            Swal.fire(data.error);
+          }
+        }).catch(err => {
+          console.error(err);
+          Swal.fire("Error", "Ocurrió un error al guardar la agenda médica.", "error");
+        });
+      }
+      $('#txtMedico').val("");
+      $('#modalFormulario').modal("hide");
+    });
+  }
+
+  const editar = () => {
+    $('#tblAgenda').on('click', 'button[name="btn_editar"]',function(){
+      // Mostrar mensaje de confirmación usando sweetalert
+      Swal.fire({
+        title: "¿Deseas editar esta agenda médica?",
+        showCancelButton: true,
+        confirmButtonText: "Si",
+        cancelButtonText: `No`
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Recuperar información para editar
+          const idAgenda = $(this).data('id');
+          $('#txtIdAgenda').val(idAgenda);
+
+          // Obtener datos de la agenda
+          fetch(`/api/v1/agenda/${idAgenda}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(resp => resp.json())
+          .then(data => {
+            $('#txtMedico').val(data.data.medico);
+            $('#txtEspecialidad').val(data.data.especialidad);
+            $('#txtSalaAtencion').val(data.data.sala_atencion);
+            $('#txtTurno').val(data.data.turno);
+            $('#txtDia').val(data.data.dia);
+            $('#modalFormulario').modal();
+          });
+        }
+      });
+    });
+  }
+
+  const eliminar = () => {
+    $('#tblAgenda').on('click', 'button[name="btn_eliminar"]',function(){
+      const idAgenda = $(this).data('id');
+      // Mostrar mensaje de confirmación usando sweetalert
+      Swal.fire({
+        title: "¿Deseas eliminar esta agenda médica?",
+        showCancelButton: true,
+        confirmButtonText: "Si",
+        cancelButtonText: `No`
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/api/v1/agenda/${idAgenda}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(resp => resp.json())
+          .then(data => {
+            if(data && !data.error && data.success) {
+              const fila =$(this).closest('tr');
+              const tabla = $('#tblAgenda').DataTable();
+              tabla.row(fila).remove().draw();
+              Swal.fire("Eliminado", "", data.success);
+            } else {
+              Swal.fire(data.error);
+            }
+          }).catch(err => {
+            Swal.fire("Error", "Ocurrió un error al eliminar la agenda médica.", "error");
+          });
+        }
+      });
+    });
+  }
+
+  const addEvents = () => {
+    agregar();
+    guardar();
+    editar();
+    eliminar();
+  }
+
+  $(function() {
+    initDatatable();
+    addEvents();
+  });
+</script>
+{% endblock %}

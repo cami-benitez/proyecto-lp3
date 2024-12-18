@@ -10,7 +10,7 @@ from app.rutas.referenciales.persona.persona_route import persona_mod
 from app.rutas.referenciales.paciente.paciente_route import pacientemod
 from app.rutas.referenciales.dia.dia_route import diamod
 from app.rutas.referenciales.turno.turno_route import turmod
-from app.rutas.referenciales.sexo.sexo_route import sexmod
+from app.rutas.referenciales.genero.genero_route import genmod
 from app.rutas.referenciales.diagnostico.diagnostico_route import diagmod
 from app.rutas.referenciales.estadocivil.estadocivil_route import estmod
 from app.rutas.referenciales.enfermedad.enfermedad_route import enfmod
@@ -20,7 +20,7 @@ from app.rutas.referenciales.medico.medico_route import medico_mod
 from app.rutas.referenciales.pago.pago_route import pagmod
 from app.rutas.referenciales.horario.horario_route import hormod
 from app.rutas.referenciales.servicio.servicio_route import sermod
-
+from app.rutas.registrar_agenda_medica.registrar_agenda_medica_route import ammod 
 
 
 # registrar referenciales 
@@ -28,6 +28,12 @@ modulo0 ='/referenciales'
 app.register_blueprint(ciumod, url_prefix=f'{modulo0}/ciudad')
 
 from app.rutas.referenciales.ciudad.ciudad_api import ciuapi
+
+# importar agenda medica
+modulo1 ='/agenda-medica'
+app.register_blueprint(ammod, url_prefix=f'{modulo1}/registrar-agenda-medica')
+
+from app.rutas.registrar_agenda_medica.registar_agenda_medica_api import amapi
 
 
 modulo0 ='/referenciales'
@@ -56,9 +62,9 @@ app.register_blueprint(turmod, url_prefix=f'{modulo0}/turno')
 from app.rutas.referenciales.turno.turno_api import turapi
 
 modulo0 = '/referenciales'
-app.register_blueprint(sexmod, url_prefix=f'{modulo0}/sexo')
+app.register_blueprint(genmod, url_prefix=f'{modulo0}/genero')
 
-from app.rutas.referenciales.sexo.sexo_api import sexapi
+from app.rutas.referenciales.genero.genero_api import genapi
 
 modulo0 = '/referenciales'
 app.register_blueprint(diagmod, url_prefix=f'{modulo0}/Diagnostico')
@@ -119,7 +125,7 @@ app.register_blueprint(diaapi, url_prefix=version1)
 
 app.register_blueprint(turapi, url_prefix=version1)
 
-app.register_blueprint(sexapi, url_prefix=version1)
+app.register_blueprint(genapi, url_prefix=version1)
 
 app.register_blueprint(diagapi, url_prefix=version1)
 
@@ -138,3 +144,7 @@ app.register_blueprint(pagapi, url_prefix=version1)
 app.register_blueprint(horapi, url_prefix=version1)
 
 app.register_blueprint(serapi, url_prefix=version1)
+
+apiversion1 = '/api/v1'
+#agenda api
+app.register_blueprint(amapi, url_prefix=f'{apiversion1}/{modulo1}/registrar-agenda-medica')
