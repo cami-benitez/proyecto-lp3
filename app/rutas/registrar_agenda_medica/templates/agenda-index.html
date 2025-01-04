@@ -17,12 +17,9 @@ Listar Agenda Médica
         <table class="table table-striped" id="tblAgenda">
           <thead>
             <tr>
-              <th>ID Médico</th>
-              <th>Médico</th>
-              <th>Especialidad</th>
-              <th>Sala de Atención</th>
-              <th>Turno</th>
-              <th>Día</th>
+              <th>Codigo</th>
+              <th>solicitante</th>
+              <th>Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -51,17 +48,14 @@ Listar Agenda Médica
       language: {
         url: "{{ url_for('static', filename='vendor/datatables/es-ES.json') }}",
       },
-      ajax:'/api/v1/gestionar-agenda/obtener-agenda',
+      ajax:'/api/v1/gestionar-agenda/registrar-agenda/agenda',
       columns: [
-        { data: 'id_medico' },
+        { data: 'id_agenda_medica' },
         { data: 'medico' },
-        { data: 'especialidad' },
-        { data: 'sala_atencion' },
-        { data: 'turno' },
-        { data: 'dia' },
+        { data: 'estado' },
         { data: function(row) {
-            return `<button type="button" name="btn_editar" class="btn btn-primary" data-id="${row.id_medico}">Modificar</button>
-                    <button type="button" name="btn_eliminar" class="btn btn-danger" data-id="${row.id_medico}">Eliminar</button>`
+            return `<button type="button" name="btn_editar" class="btn btn-primary" data-id="${row.id_agenda_medica}">Modificar</button>
+                    <button type="button" name="btn_eliminar" class="btn btn-danger" data-id="${row.id_agenda_medica}">Eliminar</button>`
           }
         }
       ]
@@ -86,7 +80,7 @@ Listar Agenda Médica
 
       if(idAgenda) {
         // Actualizar agenda médica
-        fetch(`/api/v1/agenda/${idAgenda}`, {
+        fetch(`/api/v1/gestionar-agenda/obtener-agenda/${idAgenda}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'

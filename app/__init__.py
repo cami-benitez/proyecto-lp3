@@ -20,7 +20,6 @@ from app.rutas.referenciales.medico.medico_route import medico_mod
 from app.rutas.referenciales.pago.pago_route import pagmod
 from app.rutas.referenciales.horario.horario_route import hormod
 from app.rutas.referenciales.servicio.servicio_route import sermod
-from app.rutas.registrar_agenda_medica.registrar_agenda_medica_route import ammod 
 
 
 # registrar referenciales 
@@ -30,12 +29,15 @@ app.register_blueprint(ciumod, url_prefix=f'{modulo0}/ciudad')
 from app.rutas.referenciales.ciudad.ciudad_api import ciuapi
 
 # importar agenda medica
+from app.rutas.registrar_agenda_medica.registrar_agenda_medica_route import ammod 
+# registro de modulo 
 modulo1 ='/agenda-medica'
 app.register_blueprint(ammod, url_prefix=f'{modulo1}/registrar-agenda-medica')
 
 from app.rutas.registrar_agenda_medica.registar_agenda_medica_api import amapi
 
 
+# APIS v1
 modulo0 ='/referenciales'
 app.register_blueprint(paimod, url_prefix=f'{modulo0}/pais')
 
@@ -111,7 +113,6 @@ app.register_blueprint(sermod, url_prefix=f'{modulo0}/Servicio')
 
 from app.rutas.referenciales.servicio.servicio_api import serapi
 
-# APIS v1
 version1 = '/api/v1'
 app.register_blueprint(ciuapi, url_prefix=version1)
 
